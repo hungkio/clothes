@@ -2,7 +2,7 @@
 
     <div class="navbar-header navbar-white bg-white d-none d-md-flex align-items-md-center">
         <div class="navbar-brand navbar-brand-md">
-            <a href="{{ route('admin.dashboard') }}" class="d-inline-block">
+            <a href="{{ route('admin.designs.index') }}" class="d-inline-block">
                 @if(setting('store_logo'))
                     <img src="{{ \Storage::url(setting('store_logo')) }}" alt="{{ setting('store_name') }}">
                 @else
@@ -12,7 +12,7 @@
         </div>
 
         <div class="navbar-brand navbar-brand-xs pl-1">
-            <a href="{{ route('admin.dashboard') }}" class="d-inline-block">
+            <a href="{{ route('admin.designs.index') }}" class="d-inline-block">
                 <img src="{{ setting('store_favicon') ? \Storage::url(setting('store_favicon')) : '' }}" alt="">
             </a>
         </div>
@@ -20,7 +20,7 @@
 
     <div class="d-flex flex-1 d-md-none">
         <div class="navbar-brand mr-auto">
-            <a href="{{ route('admin.dashboard') }}" class="d-inline-block">
+            <a href="{{ route('admin.designs.index') }}" class="d-inline-block">
                 <img src="{{ setting('store_favicon') ? \Storage::url(setting('store_favicon')) : '' }}" alt="">
             </a>
         </div>
@@ -38,7 +38,7 @@
     <div class="collapse navbar-collapse" id="navbar-mobile">
         <ul class="navbar-nav mr-md-auto">
             <li class="nav-item">
-                <a href="{{ route('admin.dashboard') }}" class="navbar-nav-link sidebar-control sidebar-main-toggle d-none d-md-block header-nav">
+                <a href="{{ route('admin.designs.index') }}" class="navbar-nav-link sidebar-control sidebar-main-toggle d-none d-md-block header-nav">
                     <i class="fal fa-bars"></i>
                 </a>
             </li>
@@ -58,7 +58,6 @@
                 </a>
 
                 <div class="dropdown-menu dropdown-menu-right">
-                    <a href="{{ route('admin.account-settings.edit') }}" class="dropdown-item"><i class="fal fa-user-cog"></i> {{ __('Thiết lập tài khoản') }}</a>
                     <x-form-button :action="route('admin.logout')" class="dropdown-item">
                         <i class="fal fa-sign-out"></i>
                         {{ __('Đăng xuất') }}

@@ -30,12 +30,6 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('admin.account-settings.edit') }}" class="nav-link">
-                            <i class="fal fa-user-cog"></i>
-                            <span>{{ __('Thiết lập tài khoản') }}</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a href="javascript:void(0)" class="nav-link" onclick="$('#logout-form').submit()">
                             <i class="fal fa-sign-out"></i>
                             <span>{{ __('Đăng xuất') }}</span>
@@ -57,14 +51,14 @@
                 <li class="nav-item-header">
                     <div class="text-uppercase font-size-xs line-height-xs">
                         {{ __('Menu') }}
-                        <a href="{{ route('admin.dashboard') }}" class="navbar-nav-link sidebar-control sidebar-main-toggle d-none d-md-block menu-nav">
+                        <a href="{{ route('admin.designs.index') }}" class="navbar-nav-link sidebar-control sidebar-main-toggle d-none d-md-block menu-nav">
                             <i class="fal fa-bars"></i>
                         </a>
                     </div>
                     <i class="fal fa-bars navbar-nav-link sidebar-control sidebar-main-toggle" title="{{ __('Menu') }}"></i>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('admin.dashboard') }}" class="nav-link">
+                    <a href="{{ route('admin.designs.index') }}" class="nav-link">
                         <i class="fal fa-home"></i>
                         <span>
                             {{ __('Trang chủ') }}

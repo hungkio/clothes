@@ -11,7 +11,7 @@
 |
 */
 
-use App\Http\Controllers\Admin\AccountSettingController;
+use App\Http\Controllers\DesignController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Admin\Auth\ForgotPasswordController;
@@ -48,6 +48,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Route Dashboards
     Route::middleware('auth')
         ->group(function () {
+            Route::get('/', [DesignController::class, 'index'])->name('designs.index');
+
             //Upload Tinymce
             Route::post('uploads-tinymce', UploadTinymceController::class)->name('public.upload-tinymce');
 

@@ -10,16 +10,9 @@ use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Spatie\Activitylog\Models\Activity;
 
 // Home
-Breadcrumbs::for('admin.dashboard', function (BreadcrumbsGenerator $trail) {
-    $trail->push(__('Trang chủ'), route('admin.dashboard'), ['icon' => 'fal fa-home']);
+Breadcrumbs::for('admin.designs.index', function (BreadcrumbsGenerator $trail) {
+    $trail->push(__('Trang chủ'), route('admin.designs.index'), ['icon' => 'fal fa-home']);
 });
-
-// Home => Account Settings
-Breadcrumbs::for('admin.account-settings.edit', function (BreadcrumbsGenerator $trail) {
-    $trail->parent('admin.dashboard');
-    $trail->push(__('Thiết lập tài khoản'), route('admin.account-settings.edit'));
-});
-
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +23,7 @@ Breadcrumbs::for('admin.account-settings.edit', function (BreadcrumbsGenerator $
 
 // Home > Posts
 Breadcrumbs::for('admin.posts.index', function (BreadcrumbsGenerator $trail) {
-    $trail->parent('admin.dashboard');
+    $trail->parent('admin.designs.index');
     $trail->push(__('Bài viết'), route('admin.posts.index'), ['icon' => 'fal fa-edit']);
 });
 
@@ -56,7 +49,7 @@ Breadcrumbs::for('admin.posts.edit', function (BreadcrumbsGenerator $trail, Post
 
 // Home > Admins
 Breadcrumbs::for('admin.admins.index', function (BreadcrumbsGenerator $trail) {
-    $trail->parent('admin.dashboard');
+    $trail->parent('admin.designs.index');
     $trail->push(__('Tài khoản'), route('admin.admins.index'), ['icon' => 'fal fa-user']);
 });
 
