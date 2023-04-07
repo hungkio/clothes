@@ -12,6 +12,7 @@
 */
 
 use App\Http\Controllers\DesignController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Admin\Auth\ForgotPasswordController;
@@ -48,7 +49,27 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Route Dashboards
     Route::middleware('auth')
         ->group(function () {
+            // design
             Route::get('/', [DesignController::class, 'index'])->name('designs.index');
+            Route::post('/bulk-delete', [DesignController::class, 'bulkDelete'])->name('designs.bulk-delete');
+            Route::get('/create', [DesignController::class, 'create'])->name('designs.create');
+            Route::post('/', [DesignController::class, 'store'])->name('designs.store');
+            Route::get('/{post}/edit', [DesignController::class, 'edit'])->name('designs.edit');
+            Route::delete('/{post}', [DesignController::class, 'destroy'])->name('designs.destroy');
+            Route::put('/{post}', [DesignController::class, 'update'])->name('designs.update');
+            Route::post('/{post}/status', [DesignController::class, 'changeStatus'])->name('designs.change.status');
+            Route::post('/bulk-status', [DesignController::class, 'bulkStatus'])->name('designs.bulk.status');
+
+            //staff
+            Route::post('staffs/bulk-delete', [StaffController::class, 'bulkDelete'])->name('staffs.bulk-delete');
+            Route::get('staffs', [StaffController::class, 'index'])->name('staffs.index');
+            Route::get('staffs/create', [StaffController::class, 'create'])->name('staffs.create');
+            Route::post('staffs', [StaffController::class, 'store'])->name('staffs.store');
+            Route::get('staffs/{staff}/edit', [StaffController::class, 'edit'])->name('staffs.edit');
+            Route::delete('staffs/{staff}', [StaffController::class, 'destroy'])->name('staffs.destroy');
+            Route::put('staffs/{staff}', [StaffController::class, 'update'])->name('staffs.update');
+            Route::post('staffs/{staff}/status', [StaffController::class, 'changeStatus'])->name('staffs.change.status');
+            Route::post('staffs/bulk-status', [StaffController::class, 'bulkStatus'])->name('staffs.bulk.status');
 
             //Upload Tinymce
             Route::post('uploads-tinymce', UploadTinymceController::class)->name('public.upload-tinymce');

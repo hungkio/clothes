@@ -3,11 +3,7 @@
     <div class="navbar-header navbar-white bg-white d-none d-md-flex align-items-md-center">
         <div class="navbar-brand navbar-brand-md">
             <a href="{{ route('admin.designs.index') }}" class="d-inline-block">
-                @if(setting('store_logo'))
-                    <img src="{{ \Storage::url(setting('store_logo')) }}" alt="{{ setting('store_name') }}">
-                @else
                     <span>{{ setting('store_name') }}</span>
-                @endif
             </a>
         </div>
 

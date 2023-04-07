@@ -41,6 +41,26 @@ Breadcrumbs::for('admin.posts.edit', function (BreadcrumbsGenerator $trail, Post
     $trail->push(__('Chỉnh sửa'), route('admin.posts.edit', $post));
 });
 
+// Home > Staffs
+Breadcrumbs::for('admin.staffs.index', function (BreadcrumbsGenerator $trail) {
+    $trail->parent('admin.designs.index');
+    $trail->push(__('Nhân viên'), route('admin.staffs.index'), ['icon' => 'fal fa-edit']);
+});
+
+// Home > Posts > Create
+
+Breadcrumbs::for('admin.staffs.create', function (BreadcrumbsGenerator $trail) {
+    $trail->parent('admin.staffs.index');
+    $trail->push(__('Tạo'), route('admin.staffs.create'));
+});
+
+// Home > Posts > [admin] > Edit
+Breadcrumbs::for('admin.staffs.edit', function (BreadcrumbsGenerator $trail, \App\Staffs $staff) {
+    $trail->parent('admin.staffs.index');
+    $trail->push($staff->name, '#');
+    $trail->push(__('Chỉnh sửa'), route('admin.staffs.edit', $staff));
+});
+
 /*
 |--------------------------------------------------------------------------
 | System Breadcrumbs
