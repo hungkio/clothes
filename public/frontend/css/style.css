@@ -1,0 +1,28 @@
+.w-30 {
+    width: 15%;
+}
+.w-70 {
+    width: 85%;
+}
+.float-left {
+    float: left;
+}
+.mt-30 {
+    margin-top: 30px;
+}
+.pl-1 {
+    padding-left: 1em;
+}
+
+.img_thumb_blogs img {
+    width: 25em;
+}
+.image-blog-left img {
+    width: 7em;
+}
+.section_tour-new_title {
+    margin-top: 2em;
+}
+.img_thumb_blogs {
+    text-align: center;
+}
