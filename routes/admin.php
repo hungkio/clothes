@@ -13,6 +13,7 @@
 
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Admin\Auth\ForgotPasswordController;
@@ -68,8 +69,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('staffs/{staff}/edit', [StaffController::class, 'edit'])->name('staffs.edit');
             Route::delete('staffs/{staff}', [StaffController::class, 'destroy'])->name('staffs.destroy');
             Route::put('staffs/{staff}', [StaffController::class, 'update'])->name('staffs.update');
-            Route::post('staffs/{staff}/status', [StaffController::class, 'changeStatus'])->name('staffs.change.status');
-            Route::post('staffs/bulk-status', [StaffController::class, 'bulkStatus'])->name('staffs.bulk.status');
+
+            //brand
+            Route::post('brands/bulk-delete', [BrandController::class, 'bulkDelete'])->name('brands.bulk-delete');
+            Route::get('brands', [BrandController::class, 'index'])->name('brands.index');
+            Route::get('brands/create', [BrandController::class, 'create'])->name('brands.create');
+            Route::post('brands', [BrandController::class, 'store'])->name('brands.store');
+            Route::get('brands/{brand}/edit', [BrandController::class, 'edit'])->name('brands.edit');
+            Route::delete('brands/{brand}', [BrandController::class, 'destroy'])->name('brands.destroy');
+            Route::put('brands/{brand}', [BrandController::class, 'update'])->name('brands.update');
 
             //Upload Tinymce
             Route::post('uploads-tinymce', UploadTinymceController::class)->name('public.upload-tinymce');

@@ -3,12 +3,12 @@
 namespace App\DataTables;
 
 use App\DataTables\Core\BaseDatable;
-use App\DataTables\Export\StaffExportHandler;
-use App\Staffs;
+use App\DataTables\Export\BrandExportHandler;
+use App\Brands;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 
-class StaffDataTable extends BaseDatable
+class BrandDataTable extends BaseDatable
 {
     /**
      * Build DataTable class.
@@ -21,12 +21,12 @@ class StaffDataTable extends BaseDatable
         return datatables()
             ->eloquent($query)
             ->addIndexColumn()
-            ->editColumn('name', fn (Staffs $staff) => $staff->name)
-            ->editColumn('role', fn (Staffs $staff) => Staffs::ROLE[$staff->role])
-            ->editColumn('phone', fn (Staffs $staff) => $staff->phone)
-            ->editColumn('created_at', fn (Staffs $staff) => formatDate($staff->created_at))
-            ->editColumn('updated_at', fn (Staffs $staff) => formatDate($staff->updated_at))
-            ->addColumn('action', 'admin.staffs._tableAction')
+            ->editColumn('name', fn (brands $staff) => $staff->name)
+            ->editColumn('phone', fn (brands $staff) => $staff->phone)
+            ->editColumn('address', fn (brands $staff) => $staff->address)
+            ->editColumn('created_at', fn (brands $staff) => formatDate($staff->created_at))
+            ->editColumn('updated_at', fn (brands $staff) => formatDate($staff->updated_at))
+            ->addColumn('action', 'admin.brands._tableAction')
             ->filterColumn('name', function($query, $keyword) {
                 $query->where('name', 'like', "%{$keyword}%");
             })
@@ -37,10 +37,10 @@ class StaffDataTable extends BaseDatable
     /**
      * Get query source of dataTable.
      *
-     * @param \App\Staffs $model
+     * @param \App\Brands $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(Staffs $model)
+    public function query(Brands $model)
     {
         return $model->newQuery();
     }
@@ -51,8 +51,8 @@ class StaffDataTable extends BaseDatable
             Column::checkbox(''),
             Column::make('id')->title(__('STT'))->data('DT_RowIndex')->searchable(false),
             Column::make('name')->title(__('Tên'))->width('20%'),
-            Column::make('role')->title(__('Chức vụ'))->width('20%'),
             Column::make('phone')->title(__('Số ĐT'))->width('20%'),
+            Column::make('address')->title(__('Địa chỉ'))->width('20%'),
             Column::make('created_at')->title(__('Thời gian tạo'))->searchable(false),
             Column::computed('action')
                 ->title(__('Tác vụ'))
@@ -87,7 +87,7 @@ class StaffDataTable extends BaseDatable
      */
     protected function filename(): string
     {
-        return 'staff_'.date('YmdHis');
+        return 'brand_'.date('YmdHis');
     }
 
     protected function buildExcelFile()
@@ -96,7 +96,7 @@ class StaffDataTable extends BaseDatable
         $source = app()->call([$this, 'query']);
         $source = $this->applyScopes($source);
 
-        return new StaffExportHandler($source->get());
+        return new BrandExportHandler($source->get());
     }
 
     public function printPreview()
@@ -105,6 +105,6 @@ class StaffDataTable extends BaseDatable
         $source = app()->call([$this, 'query']);
         $source = $this->applyScopes($source);
         $data = $source->get();
-        return view('admin.staffs.print', compact('data'));
+        return view('admin.brands.print', compact('data'));
     }
 }

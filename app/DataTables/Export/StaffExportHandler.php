@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class PageExportHandler implements ShouldAutoSize, FromView
+class StaffExportHandler implements ShouldAutoSize, FromView
 {
     use Exportable;
     protected $collection;
@@ -25,7 +25,7 @@ class PageExportHandler implements ShouldAutoSize, FromView
 
     public function view(): View
     {
-        return view('admin.pages.export', [
+        return view('admin.staffs.export', [
             'data' => $this->collection
         ]);
     }

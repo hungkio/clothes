@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\DataTables\StaffDataTable;
 use App\Http\Requests\Admin\PostBulkDeleteRequest;
-use App\Http\Requests\Admin\PostStoreRequest;
-use App\Http\Requests\Admin\PostUpdateRequest;
 use App\Http\Requests\Admin\StaffRequest;
 use App\Staffs;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -54,17 +52,10 @@ class StaffController
     {
         $this->authorize('update', $staff);
 
-        if ($request->hasFile('image')) {
-            $staff->addMedia($request->image)->toMediaCollection('image');
-        }
+        $staff->update($request->all());
 
-        $staff->update($request->except(['category', 'image', 'proengsoft_jsvalidation', 'redirect_url']));
+        flash()->success(__('Nhân viên ":model" đã được cập nhật !', ['model' => $staff->name]));
 
-        $staff->taxons()->sync($request->input('category'));
-
-        flash()->success(__('Nhân viên ":model" đã được cập nhật !', ['model' => $staff->title]));
-
-        logActivity($staff, 'update'); // log activity
 
         return intended($request, route('admin.staffs.index'));
     }
@@ -72,13 +63,6 @@ class StaffController
     public function destroy(Staffs $staff)
     {
         $this->authorize('delete', $staff);
-        if (\App\Enums\PageState::Active == $staff->status && !$staff->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => __('Nhân viên đang được sử dụng không thể xoá!'),
-            ]);
-        }
-        logActivity($staff, 'delete'); // log activity
 
         $staff->delete();
 
@@ -93,18 +77,14 @@ class StaffController
         $count_deleted = 0;
         $deletedRecord = Staffs::whereIn('id', $request->input('id'))->get();
         foreach ($deletedRecord as $staff) {
-            if (\App\Enums\PageState::Active != $staff->status && $staff->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
-                logActivity($staff, 'delete'); // log activity
                 $staff->delete();
                 $count_deleted++;
-            }
         }
         return response()->json([
             'status' => true,
-            'message' => __('Đã xóa ":count" bài viết thành công và ":count_fail" bài viết đang được sử dụng, không thể xoá',
+            'message' => __('Đã xóa ":count" bài viết thành công',
                 [
                     'count' => $count_deleted,
-                    'count_fail' => count($request->input('id')) - $count_deleted,
                 ]),
         ]);
     }

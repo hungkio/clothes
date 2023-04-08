@@ -12,17 +12,17 @@
                         <fieldset>
                             <legend class="font-weight-semibold text-uppercase font-size-sm">
                                 {{ __('Chung') }}
-                                @if($staff->id)
+                                @if($brand->id)
                                     | <a href="" class="text-primary font-weight-semibold"
-                                         target="_blank">{{ Str::limit($staff->name, 20) }}</a>
+                                         target="_blank">{{ Str::limit($brand->name, 20) }}</a>
                                 @endif
                             </legend>
                             <div class="collapse show" id="general">
                                 <x-text-field
                                     name="name"
-                                    :placeholder="__('Tên nhân viên')"
-                                    :label="__('Tên nhân viên')"
-                                    :value="$staff->name"
+                                    :placeholder="__('Tên xưởng')"
+                                    :label="__('Tên xưởng')"
+                                    :value="$brand->name"
                                     required
                                 >
                                 </x-text-field>
@@ -31,30 +31,20 @@
                                     name="phone"
                                     :placeholder="__('Số ĐT')"
                                     :label="__('Số ĐT')"
-                                    :value="$staff->phone"
+                                    :value="$brand->phone"
                                     required
                                 >
-                                    {!! $staff->phone ?? null !!}
+                                    {!! $brand->description ?? null !!}
                                 </x-text-field>
 
-                                <div class="form-group row">
-                                    <label for="select-taxon" class="col-lg-2 text-lg-right col-form-label">
-                                        <span class="text-danger">*</span> {{ __('Vai trò') }}:
-                                    </label>
-                                    <div class="col-lg-9">
-                                        <select class="form-control" name="role">
-                                            @foreach($roles as $key => $role)
-                                            <option
-                                                value="{{ $key }}" {{ $staff->role == $key ? 'selected' : '' }}>{{ $role }}</option>
-                                            @endforeach
-                                        </select>
-                                        @error('status')
-                                            <span class="form-text text-danger">
-                                                {{ $message }}
-                                            </span>
-                                        @enderror
-                                    </div>
-                                </div>
+                                <x-text-field
+                                    name="address"
+                                    :placeholder="__('Địa chỉ')"
+                                    :label="__('Địa chỉ')"
+                                    :value="$brand->address"
+                                    required
+                                >
+                                </x-text-field>
                             </div>
 
                         </fieldset>

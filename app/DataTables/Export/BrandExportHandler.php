@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class MenuExportHandler implements ShouldAutoSize, FromView
+class BrandExportHandler implements ShouldAutoSize, FromView
 {
     use Exportable;
     protected $collection;
@@ -25,7 +25,7 @@ class MenuExportHandler implements ShouldAutoSize, FromView
 
     public function view(): View
     {
-        return view('admin.menus.export', [
+        return view('admin.brands.export', [
             'data' => $this->collection
         ]);
     }

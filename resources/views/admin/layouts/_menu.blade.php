@@ -79,6 +79,30 @@
                     </li>
                 @endcan
 
+                @can('staffs.view')
+                    <li class="nav-item">
+                        <a href="{{ route('admin.staffs.index') }}"
+                           class="nav-link {{ request()->routeIs('admin.staffs*') ? 'active' : null }}">
+                            <i class="fal fa-edit"></i>
+                            <span>
+                            {{ __("Nhân viên") }}
+                        </span>
+                        </a>
+                    </li>
+                @endcan
+
+                @can('brands.view')
+                    <li class="nav-item">
+                        <a href="{{ route('admin.brands.index') }}"
+                           class="nav-link {{ request()->routeIs('admin.brands*') ? 'active' : null }}">
+                            <i class="fal fa-edit"></i>
+                            <span>
+                            {{ __("Xưởng") }}
+                        </span>
+                        </a>
+                    </li>
+                @endcan
+
                 <!-- System -->
                 @canany(['admins.view', 'menus.index', 'log-activities.index', 'admins.view', 'roles.view'])
                 <li class="nav-item-header">
