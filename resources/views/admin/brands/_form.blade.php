@@ -34,7 +34,7 @@
                                     :value="$brand->phone"
                                     required
                                 >
-                                    {!! $brand->description ?? null !!}
+                                    {!! $brand->phone ?? null !!}
                                 </x-text-field>
 
                                 <x-text-field
@@ -51,16 +51,16 @@
 
                     </x-card>
                     <div class="d-flex justify-content-center align-items-center action-div" id="action-form">
-                        <a href="{{ route('admin.staffs.index') }}" class="btn btn-light">{{ __('Trở lại') }}</a>
+                        <a href="{{ route('admin.brands.index') }}" class="btn btn-light">{{ __('Trở lại') }}</a>
                         <div class="btn-group ml-3">
                             <button class="btn btn-primary btn-block" data-loading><i
                                     class="mi-save mr-2"></i>{{ __('Lưu') }}</button>
                             <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown"></button>
                             <div class="dropdown-menu dropdown-menu-right">
                                 <a href="javascript:void(0)" class="dropdown-item submit-type"
-                                   data-redirect="{{ route('admin.staffs.index') }}">{{ __('Lưu & Thoát') }}</a>
+                                   data-redirect="{{ route('admin.brands.index') }}">{{ __('Lưu & Thoát') }}</a>
                                 <a href="javascript:void(0)" class="dropdown-item submit-type"
-                                   data-redirect="{{ route('admin.staffs.create') }}">{{ __('Lưu & Thêm mới') }}</a>
+                                   data-redirect="{{ route('admin.brands.create') }}">{{ __('Lưu & Thêm mới') }}</a>
                             </div>
                         </div>
                     </div>

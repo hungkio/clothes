@@ -79,11 +79,23 @@
                     </li>
                 @endcan
 
+                @can('produces.view')
+                    <li class="nav-item">
+                        <a href="{{ route('admin.produces.index') }}"
+                           class="nav-link {{ request()->routeIs('admin.produces*') ? 'active' : null }}">
+                            <i class="fal fa-conveyor-belt"></i>
+                            <span>
+                            {{ __("Sản xuất") }}
+                        </span>
+                        </a>
+                    </li>
+                @endcan
+
                 @can('staffs.view')
                     <li class="nav-item">
                         <a href="{{ route('admin.staffs.index') }}"
                            class="nav-link {{ request()->routeIs('admin.staffs*') ? 'active' : null }}">
-                            <i class="fal fa-edit"></i>
+                            <i class="fal fa-user"></i>
                             <span>
                             {{ __("Nhân viên") }}
                         </span>
@@ -95,19 +107,12 @@
                     <li class="nav-item">
                         <a href="{{ route('admin.brands.index') }}"
                            class="nav-link {{ request()->routeIs('admin.brands*') ? 'active' : null }}">
-                            <i class="fal fa-edit"></i>
+                            <i class="fal fa-copyright"></i>
                             <span>
                             {{ __("Xưởng") }}
                         </span>
                         </a>
                     </li>
-                @endcan
-
-                <!-- System -->
-                @canany(['admins.view', 'menus.index', 'log-activities.index', 'admins.view', 'roles.view'])
-                <li class="nav-item-header">
-                    <div class="text-uppercase font-size-xs line-height-xs">{{ __('Hệ thống') }}</div>
-                    <i class="fal fa-horizontal-rule" title="{{ __('Hệ thống') }}"></i></li>
                 @endcan
             </ul>
         </div>

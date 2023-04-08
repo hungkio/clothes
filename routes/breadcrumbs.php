@@ -81,6 +81,26 @@ Breadcrumbs::for('admin.brands.edit', function (BreadcrumbsGenerator $trail, \Ap
     $trail->push(__('Chỉnh sửa'), route('admin.brands.edit', $brand));
 });
 
+// Home > \App\Produces
+Breadcrumbs::for('admin.produces.index', function (BreadcrumbsGenerator $trail) {
+    $trail->parent('admin.designs.index');
+    $trail->push(__('Nguyên liệu'), route('admin.produces.index'), ['icon' => 'fal fa-edit']);
+});
+
+// Home > \App\Produces > Create
+
+Breadcrumbs::for('admin.produces.create', function (BreadcrumbsGenerator $trail) {
+    $trail->parent('admin.produces.index');
+    $trail->push(__('Tạo'), route('admin.produces.create'));
+});
+
+// Home > \App\Produces > [admin] > Edit
+Breadcrumbs::for('admin.produces.edit', function (BreadcrumbsGenerator $trail, \App\Produces $produce) {
+    $trail->parent('admin.produces.index');
+    $trail->push($produce->name, '#');
+    $trail->push(__('Chỉnh sửa'), route('admin.produces.edit', $produce));
+});
+
 /*
 |--------------------------------------------------------------------------
 | System Breadcrumbs
