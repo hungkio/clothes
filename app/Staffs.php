@@ -9,9 +9,6 @@ class Staffs extends Model
 
     protected $fillable = ['name', 'phone', 'role'];
     public $guarded = [];
-    const ROLE = [
-        1 => 'Thiết kế',
-        2 => 'Cắt dọc',
-        ];
+
 
 }

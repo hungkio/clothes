@@ -14,6 +14,20 @@ Breadcrumbs::for('admin.designs.index', function (BreadcrumbsGenerator $trail) {
     $trail->push(__('Trang chủ'), route('admin.designs.index'), ['icon' => 'fal fa-home']);
 });
 
+// Home > \App\Designs > Create
+
+Breadcrumbs::for('admin.designs.create', function (BreadcrumbsGenerator $trail) {
+    $trail->parent('admin.designs.index');
+    $trail->push(__('Tạo'), route('admin.designs.create'));
+});
+
+// Home > \App\Designs > [admin] > Edit
+Breadcrumbs::for('admin.designs.edit', function (BreadcrumbsGenerator $trail, \App\Designs $design) {
+    $trail->parent('admin.designs.index');
+    $trail->push($design->name, '#');
+    $trail->push(__('Chỉnh sửa'), route('admin.designs.edit', $design));
+});
+
 /*
 |--------------------------------------------------------------------------
 | Application Breadcrumbs
@@ -23,7 +37,7 @@ Breadcrumbs::for('admin.designs.index', function (BreadcrumbsGenerator $trail) {
 
 // Home > Posts
 Breadcrumbs::for('admin.posts.index', function (BreadcrumbsGenerator $trail) {
-    $trail->parent('admin.designs.index');
+    $trail->parent('admin.posts.index');
     $trail->push(__('Bài viết'), route('admin.posts.index'), ['icon' => 'fal fa-edit']);
 });
 

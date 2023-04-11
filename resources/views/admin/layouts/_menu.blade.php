@@ -58,10 +58,10 @@
                     <i class="fal fa-bars navbar-nav-link sidebar-control sidebar-main-toggle" title="{{ __('Menu') }}"></i>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('admin.designs.index') }}" class="nav-link">
+                    <a href="{{ route('admin.designs.index') }}" class="nav-link {{ request()->routeIs('admin.designs*') ? 'active' : null }}">
                         <i class="fal fa-home"></i>
                         <span>
-                            {{ __('Trang chủ') }}
+                            {{ __('Thiết kế') }}
                         </span>
                     </a>
                 </li>
@@ -91,18 +91,6 @@
                     </li>
                 @endcan
 
-                @can('staffs.view')
-                    <li class="nav-item">
-                        <a href="{{ route('admin.staffs.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.staffs*') ? 'active' : null }}">
-                            <i class="fal fa-user"></i>
-                            <span>
-                            {{ __("Nhân viên") }}
-                        </span>
-                        </a>
-                    </li>
-                @endcan
-
                 @can('brands.view')
                     <li class="nav-item">
                         <a href="{{ route('admin.brands.index') }}"
@@ -112,6 +100,25 @@
                             {{ __("Xưởng") }}
                         </span>
                         </a>
+                    </li>
+                @endcan
+
+            <!-- System -->
+                @canany(['admins.view', 'menus.index', 'log-activities.index', 'admins.view'])
+                    <li class="nav-item-header">
+                        <div class="text-uppercase font-size-xs line-height-xs">{{ __('Hệ thống') }}</div>
+                        <i class="fal fa-horizontal-rule" title="{{ __('Hệ thống') }}"></i></li>
+                @endcan
+                @canany(['admins.view'])
+                    <li class="nav-item nav-item-submenu {{ request()->routeIs('admin.admins*') || request()->routeIs('admin.roles*') ? 'nav-item-expanded nav-item-open' : null }}">
+                        <a href="#" class="nav-link"><i class="fal fa-user"></i> <span>{{ __('Tài khoản') }}</span></a>
+                        <ul class="nav nav-group-sub" data-submenu-title="{{ __('Tài khoản') }}">
+                            @can('admins.view')
+                                <li class="nav-item"><a href="{{ route('admin.admins.index') }}"
+                                                        class="nav-link @if(request()->routeIs('admin.admins*'))active @endif">{{ __('Tài khoản') }}</a>
+                                </li>
+                            @endcan
+                        </ul>
                     </li>
                 @endcan
             </ul>

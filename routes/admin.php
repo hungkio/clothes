@@ -56,20 +56,21 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/bulk-delete', [DesignController::class, 'bulkDelete'])->name('designs.bulk-delete');
             Route::get('/create', [DesignController::class, 'create'])->name('designs.create');
             Route::post('/', [DesignController::class, 'store'])->name('designs.store');
-            Route::get('/{post}/edit', [DesignController::class, 'edit'])->name('designs.edit');
-            Route::delete('/{post}', [DesignController::class, 'destroy'])->name('designs.destroy');
-            Route::put('/{post}', [DesignController::class, 'update'])->name('designs.update');
-            Route::post('/{post}/status', [DesignController::class, 'changeStatus'])->name('designs.change.status');
+            Route::get('/{design}/edit', [DesignController::class, 'edit'])->name('designs.edit');
+            Route::put('/{design}/updateStatus', [DesignController::class, 'updateStatus'])->name('designs.updateStatus');
+            Route::delete('/{design}', [DesignController::class, 'destroy'])->name('designs.destroy');
+            Route::put('/{design}', [DesignController::class, 'update'])->name('designs.update');
+            Route::post('/{design}/status', [DesignController::class, 'changeStatus'])->name('designs.change.status');
             Route::post('/bulk-status', [DesignController::class, 'bulkStatus'])->name('designs.bulk.status');
 
             //staff
-            Route::post('staffs/bulk-delete', [StaffController::class, 'bulkDelete'])->name('staffs.bulk-delete');
-            Route::get('staffs', [StaffController::class, 'index'])->name('staffs.index');
-            Route::get('staffs/create', [StaffController::class, 'create'])->name('staffs.create');
-            Route::post('staffs', [StaffController::class, 'store'])->name('staffs.store');
-            Route::get('staffs/{staff}/edit', [StaffController::class, 'edit'])->name('staffs.edit');
-            Route::delete('staffs/{staff}', [StaffController::class, 'destroy'])->name('staffs.destroy');
-            Route::put('staffs/{staff}', [StaffController::class, 'update'])->name('staffs.update');
+//            Route::post('staffs/bulk-delete', [StaffController::class, 'bulkDelete'])->name('staffs.bulk-delete');
+//            Route::get('staffs', [StaffController::class, 'index'])->name('staffs.index');
+//            Route::get('staffs/create', [StaffController::class, 'create'])->name('staffs.create');
+//            Route::post('staffs', [StaffController::class, 'store'])->name('staffs.store');
+//            Route::get('staffs/{staff}/edit', [StaffController::class, 'edit'])->name('staffs.edit');
+//            Route::delete('staffs/{staff}', [StaffController::class, 'destroy'])->name('staffs.destroy');
+//            Route::put('staffs/{staff}', [StaffController::class, 'update'])->name('staffs.update');
 
             //brand
             Route::post('brands/bulk-delete', [BrandController::class, 'bulkDelete'])->name('brands.bulk-delete');

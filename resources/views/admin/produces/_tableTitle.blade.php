@@ -5,6 +5,6 @@
         </a>
     </div>
     <div>
-        <a href="" data-toggle="tooltip" data-html="true"  title="{{ $produce->title }}" class="text-default font-weight-semibold" target="_blank">{{ \Str::limit($produce->title, 20) }}</a>
+        <a href="" data-toggle="tooltip" data-html="true"  title="{{ $produce->name }}" class="text-default font-weight-semibold" target="_blank">{{ \Str::limit($produce->name, 20) }}</a>
     </div>
 </div>

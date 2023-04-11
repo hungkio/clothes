@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\PostDataTable;
-use App\Domain\Post\Models\Post;
-use App\Http\Requests\Admin\PostBulkDeleteRequest;
-use App\Http\Requests\Admin\PostStoreRequest;
-use App\Http\Requests\Admin\PostUpdateRequest;
+use App\DataTables\DesignDataTable;
+use App\Designs;
+use App\Domain\Admin\Models\Admin;
+use App\Http\Requests\Admin\DesignRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -16,119 +15,103 @@ class DesignController
 {
     use AuthorizesRequests;
 
-    public function index(PostDataTable $dataTable)
+    public function index(DesignDataTable $dataTable)
     {
-        $this->authorize('view', Post::class);
+        $this->authorize('view', Designs::class);
 
-        return $dataTable->render('admin.posts.index');
+        return $dataTable->render('admin.designs.index');
     }
 
     public function create(): View
     {
-        $this->authorize('create', Post::class);
-        $selectedRelatePost = [];
-        $relatedPosts = Post::get(['id', 'title']);
+        $this->authorize('create', Designs::class);
+        $progresses = Designs::PROGRESS;
+        $users = Admin::get();
 
-        $taxons = Taxon::whereTaxonomyId(setting('post_taxonomy', 1))->get();
-
-        return view('admin.posts.create', compact('relatedPosts', 'taxons', 'selectedRelatePost'));
+        return view('admin.designs.create', compact('progresses', 'users'));
     }
 
-    public function store(PostStoreRequest $request)
+    public function store(DesignRequest $request)
     {
-        $this->authorize('create', Post::class);
-        $data = $request->except(['category', 'image', 'proengsoft_jsvalidation', 'redirect_url']);
-        $data['user_id'] = auth('admins')->user()->id;
-        $post = Post::create($data);
+        $this->authorize('create', Designs::class);
+        $data = $request->all();
+        $design = Designs::create($data);
 
         if ($request->hasFile('image')) {
-            $post->addMedia($request->image)->toMediaCollection('image');
+            $design->addMedia($request->image)->toMediaCollection('image');
         }
 
-        $post->taxons()->attach($request->input('category'));
-        flash()->success(__('Bài viết ":model" đã được tạo thành công !', ['model' => $post->title]));
+        flash()->success(__('Mẫu thiết kế ":model" đã được tạo thành công !', ['model' => $design->name]));
 
-        logActivity($post, 'create'); // log activity
-
-        return intended($request, route('admin.posts.index'));
+        return intended($request, route('admin.designs.index'));
     }
 
-    public function edit(Post $post): View
+    public function edit(Designs $design): View
     {
-        $this->authorize('update', $post);
-        $post->load([
-            'taxons' => function ($query) {
-                $query->with(['ancestors' => function ($q) {
-                    $q->breadthFirst();
-                }]);
-            },
-        ]);
+        $this->authorize('update', $design);
+        $progresses = Designs::PROGRESS;
+        $users = Admin::get();
 
-        $relatedPosts = Post::get(['id', 'title']);
-        $selectedRelatePost = [];
-        if (!empty($post->related_posts)){
-            $selectedRelatePost = Post::query()
-                ->whereIntegerInRaw('id', $post->related_posts)
-                ->pluck('id')
-                ->toArray();
-        }
-        $taxons = Taxon::whereTaxonomyId(setting('post_taxonomy', 1))->orWhereIn('id', $post->taxons->pluck('id'))->get();
-
-        return view('admin.posts.edit', compact('post', 'relatedPosts', 'taxons', 'selectedRelatePost'));
+        return view('admin.designs.edit', compact('design', 'progresses', 'users'));
     }
 
-    public function update(Post $post, PostUpdateRequest $request)
-    {
-        $this->authorize('update', $post);
-
-        if ($request->hasFile('image')) {
-            $post->addMedia($request->image)->toMediaCollection('image');
-        }
-
-        $post->update($request->except(['category', 'image', 'proengsoft_jsvalidation', 'redirect_url']));
-
-        $post->taxons()->sync($request->input('category'));
-
-        flash()->success(__('Bài viết ":model" đã được cập nhật !', ['model' => $post->title]));
-
-        logActivity($post, 'update'); // log activity
-
-        return intended($request, route('admin.posts.index'));
-    }
-
-    public function destroy(Post $post)
-    {
-        $this->authorize('delete', $post);
-        if (\App\Enums\PageState::Active == $post->status && !$post->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => __('Bài viết đang được sử dụng không thể xoá!'),
-            ]);
-        }
-        logActivity($post, 'delete'); // log activity
-
-        $post->delete();
+    public function updateStatus(Designs $design, Request $request) {
+        $design->update($request->all());
 
         return response()->json([
             'status' => true,
-            'message' => __('Bài viết đã xóa thành công !'),
+            'message' => __('Mẫu thiết kế ":model" đã được duyệt!', ['model' => $design->name]),
         ]);
     }
 
-    public function bulkDelete(PostBulkDeleteRequest $request)
+    public function update(Designs $design, DesignRequest $request)
+    {
+        $this->authorize('update', $design);
+
+        if ($request->hasFile('image')) {
+            $design->addMedia($request->image)->toMediaCollection('image');
+        }
+
+        $design->update($request->all());
+
+        flash()->success(__('Mẫu thiết kế ":model" đã được cập nhật !', ['model' => $design->name]));
+
+        return intended($request, route('admin.designs.index'));
+    }
+
+    public function destroy(Designs $design)
+    {
+        $this->authorize('delete', $design);
+        if (\App\Enums\PageState::Active == $design->status && !$design->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => __('Mẫu thiết kế đang được sử dụng không thể xoá!'),
+            ]);
+        }
+        logActivity($design, 'delete'); // log activity
+
+        $design->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => __('Mẫu thiết kế đã xóa thành công !'),
+        ]);
+    }
+
+    public function bulkDelete(Request $request)
     {
         $count_deleted = 0;
-        $deletedRecord = Post::whereIn('id', $request->input('id'))->get();
-        foreach ($deletedRecord as $post) {
-            if (\App\Enums\PageState::Active != $post->status && $post->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
-                logActivity($post, 'delete'); // log activity
-                $post->delete();
+        $deletedRecord = Designs::whereIn('id', $request->input('id'))->get();
+        foreach ($deletedRecord as $design) {
+            if (\App\Enums\PageState::Active != $design->status && $design->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
+                logActivity($design, 'delete'); // log activity
+                $design->delete();
                 $count_deleted++;
             }
         }
         return response()->json([
             'status' => true,
-            'message' => __('Đã xóa ":count" bài viết thành công và ":count_fail" bài viết đang được sử dụng, không thể xoá',
+            'message' => __('Đã xóa ":count" Mẫu thiết kế thành công và ":count_fail" Mẫu thiết kế đang được sử dụng, không thể xoá',
                 [
                     'count' => $count_deleted,
                     'count_fail' => count($request->input('id')) - $count_deleted,
@@ -136,32 +119,32 @@ class DesignController
         ]);
     }
 
-    public function changeStatus(Post $post, Request $request)
+    public function changeStatus(Designs $design, Request $request)
     {
-        $this->authorize('update', $post);
+        $this->authorize('update', $design);
 
-        $post->update(['status' => $request->status]);
+        $design->update(['status' => $request->status]);
 
-        logActivity($post, 'update'); // log activity
+        logActivity($design, 'update'); // log activity
 
         return response()->json([
             'status' => true,
-            'message' => __('Bài viết đã được cập nhật trạng thái thành công !'),
+            'message' => __('Mẫu thiết kế đã được cập nhật trạng thái thành công !'),
         ]);
     }
 
     public function bulkStatus(Request $request)
     {
-        $total = Post::whereIn('id', $request->id)->get();
-        foreach ($total as $post)
+        $total = Designs::whereIn('id', $request->id)->get();
+        foreach ($total as $design)
         {
-            $post->update(['status' => $request->status]);
-            logActivity($post, 'update'); // log activity
+            $design->update(['status' => $request->status]);
+            logActivity($design, 'update'); // log activity
         }
 
         return response()->json([
             'status' => true,
-            'message' => __(':count bài viết đã được cập nhật trạng thái thành công !', ['count' => $total->count()]),
+            'message' => __(':count Mẫu thiết kế đã được cập nhật trạng thái thành công !', ['count' => $total->count()]),
         ]);
     }
 
