@@ -150,12 +150,12 @@ background: linear-gradient(to right, #F09819, #FF512F); /* W3C, IE 10+/ Edge, F
 ">
                 <div class="media">
                     <div class="media-body">
-                        <h3 class="mb-0"><a href="{{ route('admin.posts.index') }}" class="text-white">{{ formatNumber($totalPosts) }}</a></h3>
-                        <span class="text-uppercase font-size-theme"><a href="{{ route('admin.posts.index') }}" class="text-white">{{ __('Bài viết') }}</a></span>
+                        <h3 class="mb-0"><a href="{{ route('admin.products.index') }}" class="text-white">{{ formatNumber($totalPosts) }}</a></h3>
+                        <span class="text-uppercase font-size-theme"><a href="{{ route('admin.products.index') }}" class="text-white">{{ __('Sản phẩm') }}</a></span>
                     </div>
 
                     <div class="ml-3 align-self-center">
-                        <a href="{{ route('admin.posts.create') }}">
+                        <a href="{{ route('admin.products.create') }}">
                             <i class="fal fa-2x fa-edit text-white"></i>
                         </a>
                     </div>
@@ -344,9 +344,9 @@ background: linear-gradient(to right, #00dbde, #fc00ff); /* W3C, IE 10+/ Edge, F
 
         @if($postTops->count() > 0)
             <div class="col-md-6">
-                <div class="card" data-url="{{ route('admin.posts.index') }}">
+                <div class="card" data-url="{{ route('admin.products.index') }}">
                     <div class="card-header header-elements-inline">
-                        <h6 class="card-title"><i class="fal fa-edit"></i> {{ __('Bài viết được xem nhiều nhất') }}</h6>
+                        <h6 class="card-title"><i class="fal fa-tshirt"></i> {{ __('Sản phẩm được xem nhiều nhất') }}</h6>
                     </div>
 
                     <div class="card-body">
@@ -354,7 +354,7 @@ background: linear-gradient(to right, #00dbde, #fc00ff); /* W3C, IE 10+/ Edge, F
                             <table class="table">
                                 <thead>
                                 <tr>
-                                    <th class="w-100">{{ __('Tên bài viết') }}</th>
+                                    <th class="w-100">{{ __('Tên sản phẩm') }}</th>
                                     <th>{{ __('Lượt xem') }}</th>
                                 </tr>
                                 </thead>

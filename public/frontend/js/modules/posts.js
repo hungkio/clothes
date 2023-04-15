@@ -23,9 +23,9 @@ define( [
 
         function send_ajax() {
             $.ajax({
-                data: 'get=posts&number=' + posts_number,
+                data: 'get=products&number=' + posts_number,
                 type: 'POST',
-                url: 'php/get_posts.php',
+                url: 'php/get_products.php',
                 timeout: 5000,
                 cache: false,
                 success: function (data) {

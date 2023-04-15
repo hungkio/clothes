@@ -8,7 +8,7 @@ class CreatePostsTable extends Migration
 {
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->index();
             $table->string('title');
@@ -26,6 +26,6 @@ class CreatePostsTable extends Migration
 
     public function down()
     {
-         Schema::dropIfExists('posts');
+         Schema::dropIfExists('products');
     }
 }

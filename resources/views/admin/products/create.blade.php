@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', __('Tạo bài viết'))
+@section('title', __('Tạo sản phẩm'))
 @section('page-header')
     <x-page-header>
         {{ Breadcrumbs::render() }}
@@ -8,9 +8,11 @@
 @stop
 
 @section('page-content')
-    @include('admin.posts._form', [
-        'url' =>  route('admin.posts.store'),
-        'post' => new \App\Domain\Post\Models\Post,
+    @include('admin.products._form', [
+        'url' =>  route('admin.products.store'),
+        'product' => new \App\Products,
+        'designs' => $designs,
+        'brands' => $brands,
     ])
 @stop
 @push('css')
@@ -58,7 +60,7 @@
         let maxFileUpload = 9;
         Dropzone.autoDiscover = true;
         Dropzone.options.postImages = {
-            url: '{{ route('admin.posts.upload.image') }}',
+            url: '{{ route('admin.public.upload-tinymce') }}',
             maxFilesize: 2,
             maxFiles: maxFileUpload,
             addRemoveLinks: true,
@@ -92,6 +94,6 @@
             }
         }
     </script>
-    {!! JsValidator::formRequest('App\Http\Requests\Admin\PostStoreRequest', '#post-form'); !!}
+    {!! JsValidator::formRequest('App\Http\Requests\Admin\ProductRequest', '#post-form'); !!}
 @endpush
 

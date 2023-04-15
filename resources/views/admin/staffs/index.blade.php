@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', __('Bài viết'))
+@section('title', __('Sản phẩm'))
 @section('page-header')
     <x-page-header>
         {{ Breadcrumbs::render() }}
@@ -58,13 +58,13 @@
                 }
             });
         });
-        @can('posts.create')
+        @can('products.create')
         $('.buttons-create').removeClass('d-none')
         @endcan
-        @can('posts.delete')
+        @can('products.delete')
         $('.btn-danger').removeClass('d-none')
         @endcan
-        @can('posts.update')
+        @can('products.update')
         $('.btn-warning').removeClass('d-none')
         @endcan
 

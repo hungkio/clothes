@@ -119,7 +119,7 @@ return [
          * Permissions model is used to cache against.
          *
          * Ideally, this should match your preferred way of checking permissions, eg:
-         * `$user->can('view-posts')` would be 'name'.
+         * `$user->can('view-products')` would be 'name'.
          */
 
         'model_key' => 'name',

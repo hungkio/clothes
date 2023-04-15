@@ -67,13 +67,13 @@
                 </li>
 
 
-                @can('posts.view')
+                @can('products.view')
                     <li class="nav-item">
-                        <a href="{{ route('admin.posts.index') }}"
-                           class="nav-link {{ request()->routeIs('admin.posts*') ? 'active' : null }}">
-                            <i class="fal fa-edit"></i>
+                        <a href="{{ route('admin.products.index') }}"
+                           class="nav-link {{ request()->routeIs('admin.products*') ? 'active' : null }}">
+                            <i class="fal fa-tshirt"></i>
                             <span>
-                            {{ __("Bài viết") }}
+                            {{ __("Sản phẩm") }}
                         </span>
                         </a>
                     </li>

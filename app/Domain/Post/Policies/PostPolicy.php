@@ -29,7 +29,7 @@ class PostPolicy
      */
     public function view(Admin $user)
     {
-        return $user->hasPermissionTo('posts.view');
+        return $user->hasPermissionTo('products.view');
     }
 
     /**
@@ -40,7 +40,7 @@ class PostPolicy
      */
     public function create(Admin $user)
     {
-        return $user->hasPermissionTo('posts.create');
+        return $user->hasPermissionTo('products.create');
     }
 
     /**
@@ -52,7 +52,7 @@ class PostPolicy
      */
     public function update(Admin $user, Post $post)
     {
-        return $user->hasPermissionTo('posts.update');
+        return $user->hasPermissionTo('products.update');
     }
 
     /**
@@ -64,7 +64,7 @@ class PostPolicy
      */
     public function delete(Admin $user, Post $post)
     {
-        return $user->hasPermissionTo('posts.delete');
+        return $user->hasPermissionTo('products.delete');
     }
 
     /**

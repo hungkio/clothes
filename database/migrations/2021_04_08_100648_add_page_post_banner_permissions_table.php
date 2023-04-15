@@ -30,24 +30,24 @@ class AddPagePostBannerPermissionsTable extends Migration
             ],
 
             [
-                'name' => 'posts.view',
+                'name' => 'products.view',
                 'en' => ['display_name' => 'View Post'],
-                'vi' => ['display_name' => 'Xem bài viết'],
+                'vi' => ['display_name' => 'Xem sản phẩm'],
             ],
             [
-                'name' => 'posts.create',
+                'name' => 'products.create',
                 'en' => ['display_name' => 'Create Post'],
-                'vi' => ['display_name' => 'Thêm bài viết'],
+                'vi' => ['display_name' => 'Thêm sản phẩm'],
             ],
             [
-                'name' => 'posts.update',
+                'name' => 'products.update',
                 'en' => ['display_name' => 'Update Post'],
-                'vi' => ['display_name' => 'Cập nhật bài viết'],
+                'vi' => ['display_name' => 'Cập nhật sản phẩm'],
             ],
             [
-                'name' => 'posts.delete',
+                'name' => 'products.delete',
                 'en' => ['display_name' => 'Delete Post'],
-                'vi' => ['display_name' => 'Xóa bài viết'],
+                'vi' => ['display_name' => 'Xóa sản phẩm'],
             ],
 
             [
@@ -102,24 +102,24 @@ class AddPagePostBannerPermissionsTable extends Migration
             ],
 
             [
-                'name' => 'posts.view',
+                'name' => 'products.view',
                 'en' => ['display_name' => 'View Post'],
-                'vi' => ['display_name' => 'Xem bài viết'],
+                'vi' => ['display_name' => 'Xem sản phẩm'],
             ],
             [
-                'name' => 'posts.create',
+                'name' => 'products.create',
                 'en' => ['display_name' => 'Create Post'],
-                'vi' => ['display_name' => 'Thêm bài viết'],
+                'vi' => ['display_name' => 'Thêm sản phẩm'],
             ],
             [
-                'name' => 'posts.update',
+                'name' => 'products.update',
                 'en' => ['display_name' => 'Update Post'],
-                'vi' => ['display_name' => 'Cập nhật bài viết'],
+                'vi' => ['display_name' => 'Cập nhật sản phẩm'],
             ],
             [
-                'name' => 'posts.delete',
+                'name' => 'products.delete',
                 'en' => ['display_name' => 'Delete Post'],
-                'vi' => ['display_name' => 'Xóa bài viết'],
+                'vi' => ['display_name' => 'Xóa sản phẩm'],
             ],
 
             [

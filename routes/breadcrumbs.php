@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Domain\Acl\Models\Role;
 use App\Domain\Admin\Models\Admin;
-use App\Domain\Post\Models\Post;
 use DaveJamesMiller\Breadcrumbs\BreadcrumbsGenerator;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
-use Spatie\Activitylog\Models\Activity;
 
 // Home
 Breadcrumbs::for('admin.designs.index', function (BreadcrumbsGenerator $trail) {
@@ -35,50 +32,30 @@ Breadcrumbs::for('admin.designs.edit', function (BreadcrumbsGenerator $trail, \A
 */
 
 
-// Home > Posts
-Breadcrumbs::for('admin.posts.index', function (BreadcrumbsGenerator $trail) {
-    $trail->parent('admin.posts.index');
-    $trail->push(__('Bài viết'), route('admin.posts.index'), ['icon' => 'fal fa-edit']);
-});
-
-// Home > Posts > Create
-
-Breadcrumbs::for('admin.posts.create', function (BreadcrumbsGenerator $trail) {
-    $trail->parent('admin.posts.index');
-    $trail->push(__('Tạo'), route('admin.posts.create'));
-});
-
-// Home > Posts > [admin] > Edit
-Breadcrumbs::for('admin.posts.edit', function (BreadcrumbsGenerator $trail, Post $post) {
-    $trail->parent('admin.posts.index');
-    $trail->push($post->title, '#');
-    $trail->push(__('Chỉnh sửa'), route('admin.posts.edit', $post));
-});
-
-// Home > Staffs
-Breadcrumbs::for('admin.staffs.index', function (BreadcrumbsGenerator $trail) {
+// Home > Products
+Breadcrumbs::for('admin.products.index', function (BreadcrumbsGenerator $trail) {
     $trail->parent('admin.designs.index');
-    $trail->push(__('Nhân viên'), route('admin.staffs.index'), ['icon' => 'fal fa-edit']);
+    $trail->push(__('Sản phẩm'), route('admin.products.index'), ['icon' => 'fal fa-tshirt']);
 });
 
-// Home > Staffs > Create
+// Home > Products > Create
 
-Breadcrumbs::for('admin.staffs.create', function (BreadcrumbsGenerator $trail) {
-    $trail->parent('admin.staffs.index');
-    $trail->push(__('Tạo'), route('admin.staffs.create'));
+Breadcrumbs::for('admin.products.create', function (BreadcrumbsGenerator $trail) {
+    $trail->parent('admin.products.index');
+    $trail->push(__('Tạo'), route('admin.products.create'));
 });
 
-// Home > Staffs > [admin] > Edit
-Breadcrumbs::for('admin.staffs.edit', function (BreadcrumbsGenerator $trail, \App\Staffs $staff) {
-    $trail->parent('admin.staffs.index');
-    $trail->push($staff->name, '#');
-    $trail->push(__('Chỉnh sửa'), route('admin.staffs.edit', $staff));
+// Home > Products > [admin] > Edit
+Breadcrumbs::for('admin.products.edit', function (BreadcrumbsGenerator $trail, \App\Products $product) {
+    $trail->parent('admin.products.index');
+    $trail->push($product->name, '#');
+    $trail->push(__('Chỉnh sửa'), route('admin.products.edit', $product));
 });
 
 // Home > Brands
 Breadcrumbs::for('admin.brands.index', function (BreadcrumbsGenerator $trail) {
     $trail->parent('admin.designs.index');
-    $trail->push(__('Xưởng'), route('admin.brands.index'), ['icon' => 'fal fa-edit']);
+    $trail->push(__('Xưởng'), route('admin.brands.index'), ['icon' => 'fal fa-copyright']);
 });
 
 // Home > Brands > Create
@@ -98,7 +75,7 @@ Breadcrumbs::for('admin.brands.edit', function (BreadcrumbsGenerator $trail, \Ap
 // Home > \App\Produces
 Breadcrumbs::for('admin.produces.index', function (BreadcrumbsGenerator $trail) {
     $trail->parent('admin.designs.index');
-    $trail->push(__('Nguyên liệu'), route('admin.produces.index'), ['icon' => 'fal fa-edit']);
+    $trail->push(__('Nguyên liệu'), route('admin.produces.index'), ['icon' => 'fal fa-conveyor-belt']);
 });
 
 // Home > \App\Produces > Create

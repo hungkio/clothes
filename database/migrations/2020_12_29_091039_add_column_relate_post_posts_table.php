@@ -8,7 +8,7 @@ class AddColumnRelatePostPostsTable extends Migration
 {
     public function up()
     {
-        Schema::table('posts', function (Blueprint $table) {
+        Schema::table('products', function (Blueprint $table) {
             $table->json('related_posts')->nullable();
         });
     }

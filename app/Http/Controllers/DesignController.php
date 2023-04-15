@@ -6,6 +6,7 @@ use App\DataTables\DesignDataTable;
 use App\Designs;
 use App\Domain\Admin\Models\Admin;
 use App\Http\Requests\Admin\DesignRequest;
+use App\Products;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -35,6 +36,7 @@ class DesignController
     {
         $this->authorize('create', Designs::class);
         $data = $request->all();
+        $data['status'] = 1;
         $design = Designs::create($data);
 
         if ($request->hasFile('image')) {
@@ -55,9 +57,13 @@ class DesignController
         return view('admin.designs.edit', compact('design', 'progresses', 'users'));
     }
 
-    public function updateStatus(Designs $design, Request $request) {
+    public function updateStatus(Designs $design, Request $request)
+    {
         $design->update($request->all());
-
+        Products::create([
+            'name' => $design->name,
+            'design_id' => $design->id,
+        ]);
         return response()->json([
             'status' => true,
             'message' => __('Mẫu thiết kế ":model" đã được duyệt!', ['model' => $design->name]),
@@ -82,13 +88,6 @@ class DesignController
     public function destroy(Designs $design)
     {
         $this->authorize('delete', $design);
-        if (\App\Enums\PageState::Active == $design->status && !$design->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => __('Mẫu thiết kế đang được sử dụng không thể xoá!'),
-            ]);
-        }
-        logActivity($design, 'delete'); // log activity
 
         $design->delete();
 
@@ -103,11 +102,8 @@ class DesignController
         $count_deleted = 0;
         $deletedRecord = Designs::whereIn('id', $request->input('id'))->get();
         foreach ($deletedRecord as $design) {
-            if (\App\Enums\PageState::Active != $design->status && $design->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
-                logActivity($design, 'delete'); // log activity
-                $design->delete();
-                $count_deleted++;
-            }
+            $design->delete();
+            $count_deleted++;
         }
         return response()->json([
             'status' => true,
@@ -136,8 +132,7 @@ class DesignController
     public function bulkStatus(Request $request)
     {
         $total = Designs::whereIn('id', $request->id)->get();
-        foreach ($total as $design)
-        {
+        foreach ($total as $design) {
             $design->update(['status' => $request->status]);
             logActivity($design, 'update'); // log activity
         }

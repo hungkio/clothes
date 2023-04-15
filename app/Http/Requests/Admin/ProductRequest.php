@@ -6,32 +6,31 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StaffRequest extends FormRequest
+class ProductRequest extends FormRequest
 {
     public function rules(): array
     {
         if ($this->method() == "POST") {
             return [
-                'name' => ['unique:staffs','required', 'string', 'max:255', 'regex:/^[0-9 a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼẾỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệếỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳýỵỷỹ,;.]+$/'],
-                'phone' => ['string', 'max:255'],
-                'role' => ['required'],
+                'quantity' => ['required', 'numeric'],
+                'cut' => ['required', 'numeric'],
+                'design_id' => ['required', 'string'],
             ];
         } else {
             return [
                 'name' => ['required', 'string', 'max:255', 'regex:/^[0-9 a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼẾỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệếỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳýỵỷỹ,;.]+$/'],
-                'phone' => ['string', 'max:255'],
-                'role' => ['required'],
+                'progress' => ['required', 'string', 'max:255'],
+                'staff_id' => ['required', 'string', 'max:255'],
+                'image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg'],
             ];
         }
-
     }
 
     public function attributes()
     {
         return [
-            'name' => 'Tên nhân viên',
-            'phone' => 'Số điện thoại',
-            'role' => 'Vai trò',
+            'name' => 'Tên mẫu thiết kế',
+            'image' => 'ảnh',
         ];
     }
 

@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', __('Tạo bài viết'))
+@section('title', __('Tạo sản phẩm'))
 @section('page-header')
     <x-page-header>
         {{ Breadcrumbs::render() }}

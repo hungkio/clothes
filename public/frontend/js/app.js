@@ -22,7 +22,7 @@ require.config({
         'modules/userToggle': 'js/modules/user-toggle',
         'modules/menu': 'js/modules/menu',
         'modules/statistic': 'js/modules/statistic',
-        'modules/posts': 'js/modules/posts',
+        'modules/posts': 'js/modules/products',
         'modules/googleCharts': 'js/modules/google-charts',
         'modules/datePicker': 'js/modules/datepicker',
     },

@@ -2,7 +2,7 @@
 
 return [
     "pages" => 'Trang',
-    "posts" => 'Bài viết',
+    "products" => 'Sản phẩm',
     "banners" => 'Banner',
     "taxonomies" => 'Loại danh mục',
     "taxons" => 'Danh mục',

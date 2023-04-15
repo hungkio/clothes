@@ -112,7 +112,7 @@ class BrandController
 
         return response()->json([
             'status' => true,
-            'message' => __(':count bài viết đã được cập nhật trạng thái thành công !', ['count' => $total->count()]),
+            'message' => __(':count sản phẩm đã được cập nhật trạng thái thành công !', ['count' => $total->count()]),
         ]);
     }
 

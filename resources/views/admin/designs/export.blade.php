@@ -2,20 +2,24 @@
     <thead>
         <tr>
             <th>Thứ tự</th>
-            <th>Tiêu đề</th>
-            <th>Lượt xem</th>
+            <th>Tên</th>
+            <th>Nhân viên</th>
+            <th>Tiến trình</th>
+            <th>Thời gian</th>
             <th>Trạng thái</th>
             <th>Thời gian tạo</th>
         </tr>
     </thead>
     <tbody>
-    @foreach($data as $post)
+    @foreach($data as $design)
         <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $post->title }}</td>
-            <td>{{ $post->view }}</td>
-            <td>@if($post->status == \App\Enums\PostState::Active) {{ __('Hoạt động') }} @elseif($post->status == \App\Enums\PostState::Pending) {{ __('Chờ phê duyệt') }} @else {{ __('Hủy') }} @endif</td>
-            <td>{{ formatDate($post->created_at) }}</td>
+            <td>{{ $design->name }}</td>
+            <td>{{ $design->user->last_name ?? '' }}</td>
+            <td>{{ \App\Designs::PROGRESS[$design->progress] }}</td>
+            <td>{{ $design->duration }}</td>
+            <td>{{ \App\Designs::STATUS[$design->status] }}</td>
+            <td>{{ formatDate($design->created_at) }}</td>
         </tr>
     @endforeach
     </tbody>

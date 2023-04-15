@@ -12,7 +12,7 @@
 */
 
 use App\Http\Controllers\DesignController;
-use App\Http\Controllers\StaffController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ProduceController;
 use App\Http\Controllers\Admin\AdminController;
@@ -22,7 +22,6 @@ use App\Http\Controllers\Admin\Auth\LoginController;
 use App\Http\Controllers\Admin\Auth\RegisterController;
 use App\Http\Controllers\Admin\Auth\ResetPasswordController;
 use App\Http\Controllers\Admin\Auth\VerificationController;
-use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\UploadTinymceController;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -63,15 +62,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/{design}/status', [DesignController::class, 'changeStatus'])->name('designs.change.status');
             Route::post('/bulk-status', [DesignController::class, 'bulkStatus'])->name('designs.bulk.status');
 
-            //staff
-//            Route::post('staffs/bulk-delete', [StaffController::class, 'bulkDelete'])->name('staffs.bulk-delete');
-//            Route::get('staffs', [StaffController::class, 'index'])->name('staffs.index');
-//            Route::get('staffs/create', [StaffController::class, 'create'])->name('staffs.create');
-//            Route::post('staffs', [StaffController::class, 'store'])->name('staffs.store');
-//            Route::get('staffs/{staff}/edit', [StaffController::class, 'edit'])->name('staffs.edit');
-//            Route::delete('staffs/{staff}', [StaffController::class, 'destroy'])->name('staffs.destroy');
-//            Route::put('staffs/{staff}', [StaffController::class, 'update'])->name('staffs.update');
-
             //brand
             Route::post('brands/bulk-delete', [BrandController::class, 'bulkDelete'])->name('brands.bulk-delete');
             Route::get('brands', [BrandController::class, 'index'])->name('brands.index');
@@ -102,16 +92,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('admins.destroy');
             Route::put('/admins/{admin}', [AdminController::class, 'update'])->name('admins.update');
 
-            // POST
-            Route::post('/posts/bulk-delete', [PostController::class, 'bulkDelete'])->name('posts.bulk-delete');
-            Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-            Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
-            Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
-            Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
-            Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
-            Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
-            Route::post('/posts/{post}/status', [PostController::class, 'changeStatus'])->name('posts.change.status');
-            Route::post('/posts/bulk-status', [PostController::class, 'bulkStatus'])->name('posts.bulk.status');
+            // Products
+            Route::post('/products/bulk-delete', [ProductController::class, 'bulkDelete'])->name('products.bulk-delete');
+            Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+            Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+            Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+            Route::post('/products/{product}/storeOrder', [ProductController::class, 'storeOrder'])->name('products.storeOrder');
+            Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+            Route::get('/products/{parent}/editOrder/{product}', [ProductController::class, 'editOrder'])->name('products.editOrder');
+            Route::put('/products/editOrder/{product}', [ProductController::class, 'updateOrder'])->name('products.updateOrder');
+            Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+            Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+            Route::post('/products/{product}/status', [ProductController::class, 'changeStatus'])->name('products.change.status');
+            Route::post('/products/bulk-status', [ProductController::class, 'bulkStatus'])->name('products.bulk.status');
 
         });
 });
