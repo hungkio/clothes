@@ -127,7 +127,8 @@ class ProductController
         ];
 
         Products::create($data);
-
+        $this->updateParentInfo($product->id);
+        $this->updateProduce([], [], $produce_id, $produce_quantity);
         flash()->success(__('Order sản xuất cho mẫu ":model" đã được tạo thành công !', ['model' => $product->name]));
 
         return redirect()->route('admin.products.edit', $product->id);
@@ -135,6 +136,9 @@ class ProductController
 
     public function updateOrder(Products $product, Request $request)
     {
+        $old_produce_id = $product->produce_id;
+        $old_produce_quantity = $product->produce_quantity;
+
         $produce_id = $request->produce_id;
         $produce_quantity = $request->produce_quantity;
 
@@ -159,6 +163,13 @@ class ProductController
         ];
 
         $product->update($data);
+        $this->updateParentInfo($product->parent);
+        $this->updateProduce(
+            $old_produce_id ? json_decode($old_produce_id) : [],
+            $old_produce_quantity ? json_decode($old_produce_quantity) : [],
+            $produce_id,
+            $produce_quantity
+        );
 
         flash()->success(__('Order sản xuất cho mẫu ":model" đã được tạo thành công !', ['model' => $product->name]));
 
@@ -168,13 +179,6 @@ class ProductController
     public function destroy(Products $product)
     {
         $this->authorize('delete', $product);
-        if (\App\Enums\PageState::Active == $product->status && !$product->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => __('Sản phẩm đang được sử dụng không thể xoá!'),
-            ]);
-        }
-        logActivity($product, 'delete'); // log activity
 
         $product->delete();
 
@@ -184,16 +188,73 @@ class ProductController
         ]);
     }
 
+    public function updateParentInfo($product_id)
+    {
+        $product = Products::findOrFail($product_id);
+        $children = Products::where('parent', $product_id)->get();
+        $total_quantity = 0;
+        $total_cut = 0;
+        $total_receive = 0;
+        $total_not_receive = 0;
+        foreach ($children as $child) {
+            $total_quantity += $child->quantity;
+            $total_cut += $child->cut;
+            $total_receive += $child->receive;
+            $total_not_receive += $child->not_receive;
+        }
+
+        $product->update([
+            'quantity' => $total_quantity,
+            'cut' => $total_cut,
+            'receive' => $total_receive,
+            'not_receive' => $total_not_receive,
+        ]);
+    }
+
+    public function updateProduce($old_produce_id, $old_produce_quantity, $produce_id, $produce_quantity)
+    {
+        $data_new = [];
+        foreach ($produce_id as $key => $produce) {
+            if (array_key_exists($produce, $data_new)) {
+                $data_new[$produce] += $produce_quantity[$key];
+            } else {
+                $data_new = [$produce => (int)$produce_quantity[$key]] +  $data_new;
+            }
+        }
+
+        $data_old = [];
+        foreach ($old_produce_id as $key => $produce) {
+            if (array_key_exists($produce, $data_old)) {
+                $data_old[$produce] += $old_produce_quantity[$key];
+            } else {
+                $data_old = [$produce => (int)$old_produce_quantity[$key]] +  $data_old;
+            }
+        }
+
+        $diffs = [];
+        foreach ($data_new as $key => $new) {
+            if (array_key_exists($key, $data_old)) {
+                $diffs = [$key => $new - $data_old[$key]] + $diffs;
+            } else {
+                $diffs = [$key => $new] + $diffs;
+            }
+        }
+
+        foreach ($diffs as $diff_id => $diff) {
+            $diffObject = Produces::findOrFail($diff_id);
+            $diffObject->update([
+                'quantity' => $diffObject->quantity - $diff
+            ]);
+        }
+    }
+
     public function bulkDelete(Request $request)
     {
         $count_deleted = 0;
         $deletedRecord = Products::whereIn('id', $request->input('id'))->get();
         foreach ($deletedRecord as $product) {
-            if (\App\Enums\PageState::Active != $product->status && $product->menu_items(MenuItem::TYPE_POST)->get()->isEmpty()) {
-                logActivity($product, 'delete'); // log activity
-                $product->delete();
-                $count_deleted++;
-            }
+            $product->delete();
+            $count_deleted++;
         }
         return response()->json([
             'status' => true,

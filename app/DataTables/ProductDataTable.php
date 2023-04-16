@@ -26,7 +26,6 @@ class ProductDataTable extends BaseDatable
             ->editColumn('cut', fn (Products $product) => $product->cut)
             ->editColumn('receive', fn (Products $product) => $product->receive)
             ->editColumn('not_receive', fn (Products $product) => $product->not_receive)
-            ->editColumn('note', fn (Products $product) => $product->note)
             ->editColumn('created_at', fn (Products $product) => formatDate($product->created_at))
             ->editColumn('updated_at', fn (Products $product) => formatDate($product->updated_at))
             ->addColumn('action', 'admin.products._tableAction')
@@ -58,7 +57,6 @@ class ProductDataTable extends BaseDatable
             Column::make('cut')->title(__('Số lượng cắt'))->width('10%'),
             Column::make('receive')->title(__('Đã nhận'))->width('10%'),
             Column::make('not_receive')->title(__('Chưa nhận'))->width('10%'),
-            Column::make('note')->title(__('Ghi chú'))->width('10%'),
             Column::make('created_at')->title(__('Thời gian tạo'))->searchable(false),
             Column::make('updated_at')->title(__('Thời gian cập nhật'))->searchable(false),
             Column::computed('action')
