@@ -55,6 +55,9 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
 
     'asset_url' => env('ASSET_URL', null),
+    'pos_shop_id' => env('POS_SHOP_ID', 5416380),
+    'pos_api_key' => env('POS_API_KEY', '8c3633e06dec4ade8575a3c4cc0dbb9a'),
+    'pos_uri' => env('POS_URI', 'https://pos.pages.fm/api/v1/shops/'),
 
     /*
     |--------------------------------------------------------------------------

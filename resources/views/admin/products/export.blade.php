@@ -1,21 +1,27 @@
 <table>
     <thead>
-        <tr>
-            <th>Thứ tự</th>
-            <th>Tiêu đề</th>
-            <th>Lượt xem</th>
-            <th>Trạng thái</th>
-            <th>Thời gian tạo</th>
-        </tr>
+    <tr>
+        <th>Thứ tự</th>
+        <th>Tên</th>
+        <th>Số lượng</th>
+        <th>Số lượng cắt</th>
+        <th>Đã nhận</th>
+        <th>Chưa nhận</th>
+        <th>Thời gian tạo</th>
+        <th>Thời gian cập nhật</th>
+    </tr>
     </thead>
     <tbody>
-    @foreach($data as $post)
+    @foreach($data as $product)
         <tr>
             <td>{{ $loop->iteration }}</td>
-            <td>{{ $post->title }}</td>
-            <td>{{ $post->view }}</td>
-            <td>@if($post->status == \App\Enums\PostState::Active) {{ __('Hoạt động') }} @elseif($post->status == \App\Enums\PostState::Pending) {{ __('Chờ phê duyệt') }} @else {{ __('Hủy') }} @endif</td>
-            <td>{{ formatDate($post->created_at) }}</td>
+            <td>{{ $product->design->name ?? '' }}</td>
+            <td>{{ $product->quantity }}</td>
+            <td>{{ $product->cut }}</td>
+            <td>{{ $product->receive }}</td>
+            <td>{{ $product->not_receive }}</td>
+            <td>{{ formatDate($product->created_at) }}</td>
+            <td>{{ formatDate($product->updated_at) }}</td>
         </tr>
     @endforeach
     </tbody>

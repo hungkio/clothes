@@ -2,6 +2,7 @@
 
 use App\Support\ValuesStore\Setting;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Activitylog\Models\Activity;
@@ -114,5 +115,54 @@ if (!function_exists('site_get_mail_template')) {
             return !is_array($option->value) ? \json_decode($option->value, true) : $option->value;
         }
         return [];
+    }
+}
+
+if (!function_exists('pos_post_url')) {
+    function pos_post_url()
+    {
+        $url = config('app.pos_uri') . config('app.pos_shop_id') . '/products?api_key=' . config('app.pos_api_key');
+        return $url;
+    }
+}
+
+if (!function_exists('pos_get_url')) {
+    function pos_get_url()
+    {
+        $url = config('app.pos_uri') . config('app.pos_shop_id') . '/variations?api_key=' . config('app.pos_api_key');
+        return $url;
+    }
+}
+
+if (!function_exists('pos_put_url')) {
+    function pos_put_url($pos_id)
+    {
+        $url = config('app.pos_uri') . config('app.pos_shop_id') . "/products/$pos_id?api_key=" . config('app.pos_api_key');
+        return $url;
+    }
+}
+
+if (!function_exists('callApi')) {
+    function callApi($url, $method, $params = [], $headers = [])
+    {
+        $client = new Client(['base_uri' => $url]);
+
+        try {
+            $response = $client->request($method, $url, [
+                'body' => $params,
+                'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json'
+                    ] + $headers,
+                'http_errors' => false,
+            ]);
+
+            return json_decode($response->getBody());
+        } catch (GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $responseBodyAsString = $response->getBody()->getContents();
+            dd($response, $responseBodyAsString);
+        }
+
     }
 }

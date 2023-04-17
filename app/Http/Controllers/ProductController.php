@@ -9,6 +9,7 @@ use App\Domain\Admin\Models\Admin;
 use App\Http\Requests\Admin\ProductRequest;
 use App\Produces;
 use App\Products;
+use GuzzleHttp\Client;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -264,6 +265,39 @@ class ProductController
                     'count_fail' => count($request->input('id')) - $count_deleted,
                 ]),
         ]);
+    }
+
+    public function postCake($data = [])
+    {
+        $data = '{
+  "product": {
+    "name": "Tên sản phẩm",
+    "note_product": "Ghi chú sản phẩm",
+    "product_attributes": [{"name": "Màu", "values": ["Đen", "Trắng", "Đỏ"]}, {"name": "Size", "values": ["S", "M", "L"]}],
+    "variations": [
+      {
+        "fields": [{"name": "Màu", "value": "Trắng"}, {"name": "Size", "value": "M"}],
+        "images": ["https://statics.pancake.vn/user-content.pancake.vn/2021/8/5/fccd6.jpg"],
+        "last_imported_price": 30000,
+        "retail_price": 0,
+        "weight": 0,
+        "barcode": "BARCODE123",
+        "custom_id": "VCUSTOMID"
+      }
+    ],
+    "weight": 1,
+    "custom_id": "PCUSTOMID",
+    "variations_warehouses": [
+      {
+        "remain_quantity": 10,
+        "warehouse_id": "c52e67ad-d9d0-4276-abe4-e0c9f1f7d2da",
+        "batch_position": "lô 1",
+        "shelf_position": "1.2"
+      }
+    ]
+  }
+}';
+        dd(callApi(pos_post_url(), 'POST', $data), pos_post_url(), json_decode($data));
     }
 
     public function changeStatus(Products $product, Request $request)
