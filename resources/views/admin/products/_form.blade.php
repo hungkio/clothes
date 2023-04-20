@@ -39,30 +39,12 @@
                                     </div>
                                 </div>
 
-                                <x-text-field
-                                    name="quantity"
-                                    :placeholder="__('Số lượng')"
-                                    :label="__('Số lượng')"
-                                    :value="$product->quantity"
-                                    required
-                                >
-                                </x-text-field>
-
-                                <x-text-field
-                                    name="cut"
-                                    :placeholder="__('Số lượng cắt')"
-                                    :label="__('Số lượng cắt')"
-                                    :value="$product->cut"
-                                    required
-                                >
-                                </x-text-field>
-
                                 <div class="form-group row">
                                     <label for="select-taxon" class="col-lg-2 text-lg-right col-form-label">
                                         <span class="text-danger">*</span> {{ __('Xưởng') }}
                                     </label>
                                     <div class="col-lg-9">
-                                        <select name="design_id" class="form-control " data-width="100%">
+                                        <select name="brand_id" class="form-control " data-width="100%">
                                             @foreach($brands as $brand)
                                                 <option value="{{ $brand->id }}" >
                                                     {{ $brand->name }}

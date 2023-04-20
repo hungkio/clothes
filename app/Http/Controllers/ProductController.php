@@ -35,7 +35,7 @@ class ProductController
         return view('admin.products.create', compact('designs', 'brands'));
     }
 
-    public function store(ProductRequest $request)
+    public function store(Request $request)
     {
         $this->authorize('create', Products::class);
         $design = Designs::findOrFail($request->design_id);
@@ -43,11 +43,12 @@ class ProductController
         $data['name'] = $design->name;
         $product = Products::create($data);
 
-        Products::create(array_merge($data, ['parent' => $product->id])); //child
-
+        $design->update([
+            'status' => 2
+        ]);
         flash()->success(__('Sản phẩm ":model" đã được tạo thành công !', ['model' => $product->name]));
 
-        return intended($request, route('admin.products.index'));
+        return redirect()->route('admin.products.index');
     }
 
     public function edit(Products $product): View
@@ -56,8 +57,8 @@ class ProductController
 
         $children = Products::where('parent', $product->id)->with(['design', 'brand'])->get();
         foreach ($children as &$child) {
-            $produce_ids = json_decode($child->produce_id, 1);
-            $child->produce_quantity = json_decode($child->produce_quantity, 1);
+            $produce_ids = json_decode($child->produce_id, 1) ?? [];
+            $child->produce_quantity = json_decode($child->produce_quantity, 1) ?? [];
             $produce = [];
             foreach ($produce_ids as $produce_id) {
                 $produce[] = Produces::findOrFail($produce_id)->name;
@@ -89,14 +90,14 @@ class ProductController
     {
         $this->authorize('update', $parent);
 
-        $produce_ids = json_decode($product->produce_id, 1);
-        $product->produce_quantity = json_decode($product->produce_quantity, 1);
+        $produce_ids = json_decode($product->produce_id, 1) ?? [];
+        $product->produce_quantity = json_decode($product->produce_quantity, 1) ?? [];
         $produce = [];
         foreach ($produce_ids as $produce_id) {
             $produce[] = $produce_id;
         }
         $product->produce_id = $produce;
-        $product->size = json_decode($product->size);
+        $product->size = json_decode($product->size) ?? [];
         $brands = Brands::all();
         $produces = Produces::all();
         return view('admin.products.editChildPopup', compact('parent', 'brands', 'produces', 'product'))->render();
@@ -127,7 +128,7 @@ class ProductController
             'note' => $request->note,
         ];
 
-//        Products::create($data);
+        Products::create($data);
         $this->putCake($product);
 
         $this->updateParentInfo($product->id);
