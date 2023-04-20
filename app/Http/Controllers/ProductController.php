@@ -43,7 +43,7 @@ class ProductController
         $data['name'] = $design->name;
         $product = Products::create($data);
 
-        Products::create(array_merge($data, ['parent' => $product->id]));
+        Products::create(array_merge($data, ['parent' => $product->id])); //child
 
         flash()->success(__('Sản phẩm ":model" đã được tạo thành công !', ['model' => $product->name]));
 
@@ -127,7 +127,9 @@ class ProductController
             'note' => $request->note,
         ];
 
-        Products::create($data);
+//        Products::create($data);
+        $this->putCake($product);
+
         $this->updateParentInfo($product->id);
         $this->updateProduce([], [], $produce_id, $produce_quantity);
         flash()->success(__('Order sản xuất cho mẫu ":model" đã được tạo thành công !', ['model' => $product->name]));
@@ -164,6 +166,8 @@ class ProductController
         ];
 
         $product->update($data);
+        $this->putCake($product->parent()->first());
+
         $this->updateParentInfo($product->parent);
         $this->updateProduce(
             $old_produce_id ? json_decode($old_produce_id) : [],
@@ -219,7 +223,7 @@ class ProductController
             if (array_key_exists($produce, $data_new)) {
                 $data_new[$produce] += $produce_quantity[$key];
             } else {
-                $data_new = [$produce => (int)$produce_quantity[$key]] +  $data_new;
+                $data_new = [$produce => (int)$produce_quantity[$key]] + $data_new;
             }
         }
 
@@ -228,7 +232,7 @@ class ProductController
             if (array_key_exists($produce, $data_old)) {
                 $data_old[$produce] += $old_produce_quantity[$key];
             } else {
-                $data_old = [$produce => (int)$old_produce_quantity[$key]] +  $data_old;
+                $data_old = [$produce => (int)$old_produce_quantity[$key]] + $data_old;
             }
         }
 
@@ -267,37 +271,102 @@ class ProductController
         ]);
     }
 
-    public function postCake($data = [])
+    public function putCake($data)
     {
-        $data = '{
-  "product": {
-    "name": "Tên sản phẩm",
-    "note_product": "Ghi chú sản phẩm",
-    "product_attributes": [{"name": "Màu", "values": ["Đen", "Trắng", "Đỏ"]}, {"name": "Size", "values": ["S", "M", "L"]}],
-    "variations": [
-      {
-        "fields": [{"name": "Màu", "value": "Trắng"}, {"name": "Size", "value": "M"}],
-        "images": ["https://statics.pancake.vn/user-content.pancake.vn/2021/8/5/fccd6.jpg"],
-        "last_imported_price": 30000,
-        "retail_price": 0,
-        "weight": 0,
-        "barcode": "BARCODE123",
-        "custom_id": "VCUSTOMID"
-      }
-    ],
-    "weight": 1,
-    "custom_id": "PCUSTOMID",
-    "variations_warehouses": [
-      {
-        "remain_quantity": 10,
-        "warehouse_id": "c52e67ad-d9d0-4276-abe4-e0c9f1f7d2da",
-        "batch_position": "lô 1",
-        "shelf_position": "1.2"
-      }
-    ]
-  }
-}';
-        dd(callApi(pos_post_url(), 'POST', $data), pos_post_url(), json_decode($data));
+        //get size children
+        $children = $data->children()->get();
+        $sizes = [];
+        foreach ($children as $prd) {
+            $prd_size = json_decode($prd->size);
+            foreach ($prd_size as $sz) {
+                $size_arr = explode(':', $sz);
+                if (key_exists($size_arr[0], $sizes)) {
+                    $sizes[$size_arr[0]] = [
+                        'value' => $sizes[$size_arr[0]]['value'] + $size_arr[1],
+                        'id' => $size_arr[2] ?? ''
+                    ];
+                } else {
+                    $sizes[$size_arr[0]] = [
+                        'value' => $size_arr[1],
+                        'id' => $size_arr[2] ?? ''
+                    ];
+                }
+            }
+        }
+
+        // mapping size id
+        $parent_sizes = json_decode($data->size) ?? [];
+        $parent_sizes_arr = [];
+        foreach ($parent_sizes as $parent_size) {
+            $p_sz = explode(':', $parent_size);
+            $parent_sizes_arr[$p_sz[0]] = $p_sz[2];
+        }
+        foreach ($sizes as $key => $size) {
+            if (key_exists($key, $parent_sizes_arr)) {
+                $sizes[$key]['id'] = $parent_sizes_arr[$key];
+            }
+        }
+
+        // $product_attributes, $fields
+        $variations = [];
+        $size_pos = [];
+        foreach ($sizes as $size => $attribute) {
+            $size_pos[] = $size;
+            $variation = [
+                'fields' => [(object)[
+                    'name' => 'Size',
+                    'value' => $size,
+                ]],
+                'images' => $data->design ? [$data->design->getFirstMediaUrl('image')] : '',
+                'last_imported_price' => 0,
+                'retail_price' => 0,
+                'weight' => 0,
+            ];
+            if ($attribute['id']) {
+                $variation = array_merge($variation, [
+                    'id' => $attribute['id']
+                ]);
+            }
+            $variations[] = (object)$variation;
+        }
+        $product_attributes = [
+            (object)[
+                'name' => 'Size',
+                'values' => (array)$size_pos
+            ]
+        ];
+        //end $product_attributes, $fields
+
+        $objectProduct = new \stdClass();
+        $objectProduct->name = $data->name;
+        $objectProduct->note_product = $data->note;
+        $objectProduct->product_attributes = $product_attributes;
+        $objectProduct->variations = $variations;
+        $objectProduct->weight = 1;
+
+        $object = new \stdClass();
+        $object->product = $objectProduct;
+
+        if ($data->id_pos) {
+            $response = callApi(pos_put_url($data->id_pos), 'PUT', json_encode($object));
+        } else {
+            $response = callApi(pos_post_url(), 'POST', json_encode($object));
+        }
+
+        if (@$response->success) {
+            $size_mix_variations = [];
+            $variations_pos = $response->data->variations;
+            $i = 0;
+            foreach ($sizes as $key => $size) {
+                $size_mix_variations[] = $key . ':' . $size['value'] . ':' . $variations_pos[$i]->id;
+                $i++;
+            }
+            $data->update([
+                'id_pos' => $response->data->id,
+                'size' => json_encode($size_mix_variations),
+            ]);
+        }
+
     }
 
     public function changeStatus(Products $product, Request $request)

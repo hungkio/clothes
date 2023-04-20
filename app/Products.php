@@ -33,4 +33,14 @@ class Products extends Model implements HasMedia
     {
         return $this->belongsTo(Brands::class);
     }
+
+    public function parent()
+    {
+        return $this->belongsTo(Products::class, 'parent');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Products::class, 'parent');
+    }
 }

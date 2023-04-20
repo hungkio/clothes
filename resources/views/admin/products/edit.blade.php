@@ -259,9 +259,6 @@
                            data-url="{{ route('admin.products.editOrder', [$product->id, $child->id]) }}"
                            class="item-action btn-primary edit-child"
                            title="Chỉnh sửa"><i class="fal fa-pencil-alt"></i></a>
-                        <a href="javascript:void(0)" data-url="{{ route('admin.products.destroy', $child->id) }}"
-                           class="item-action js-delete1 btn-danger" title="Xóa"><i class="fal fa-trash-alt"></i></a>
-
                     </div>
                 </td>
             </tr>
