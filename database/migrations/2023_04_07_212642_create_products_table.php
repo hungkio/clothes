@@ -23,6 +23,7 @@ class CreateProductsTable extends Migration
             $table->bigInteger('design_id')->nullable();
             $table->string('produce_id')->nullable();
             $table->string('produce_quantity')->nullable();
+            $table->string('purchase_id')->nullable();
             $table->timestamps();
         });
     }

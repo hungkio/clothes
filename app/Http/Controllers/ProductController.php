@@ -111,9 +111,10 @@ class ProductController
         //size
         $size_type = $request->size_type;
         $size_quantity = $request->size_quantity;
+        $color_type = $request->color_type;
         $size_map = [];
         foreach ($size_type as $key => $size) {
-            $size_map[] = "$size:" . $size_quantity[$key];
+            $size_map[] = $color_type[$key] . ":$size:" . $size_quantity[$key];
         }
 
         $data = [
@@ -128,8 +129,9 @@ class ProductController
             'note' => $request->note,
         ];
 
-        Products::create($data);
-        $this->putCake($product);
+        $oldChildren = $product->children()->get();
+        $new = Products::create($data);
+        $this->putCake($product, $new, true, $oldChildren);
 
         $this->updateParentInfo($product->id);
         $this->updateProduce([], [], $produce_id, $produce_quantity);
@@ -149,9 +151,10 @@ class ProductController
         //size
         $size_type = $request->size_type;
         $size_quantity = $request->size_quantity;
+        $color_type = $request->color_type;
         $size_map = [];
         foreach ($size_type as $key => $size) {
-            $size_map[] = "$size:" . $size_quantity[$key];
+            $size_map[] = $color_type[$key] . ":$size:" . $size_quantity[$key];
         }
 
         $data = [
@@ -167,7 +170,7 @@ class ProductController
         ];
 
         $product->update($data);
-        $this->putCake($product->parent()->first());
+        $this->putCake($product->parent()->first(), $product);
 
         $this->updateParentInfo($product->parent);
         $this->updateProduce(
@@ -272,70 +275,118 @@ class ProductController
         ]);
     }
 
-    public function putCake($data)
+    public function getFields($products, $parent)
     {
-        //get size children
-        $children = $data->children()->get();
         $sizes = [];
-        foreach ($children as $prd) {
+        $colors = [];
+        $fields = [];
+        foreach ($products as $prd) {
             $prd_size = json_decode($prd->size);
             foreach ($prd_size as $sz) {
-                $size_arr = explode(':', $sz);
-                if (key_exists($size_arr[0], $sizes)) {
-                    $sizes[$size_arr[0]] = [
-                        'value' => $sizes[$size_arr[0]]['value'] + $size_arr[1],
-                        'id' => $size_arr[2] ?? ''
-                    ];
-                } else {
-                    $sizes[$size_arr[0]] = [
-                        'value' => $size_arr[1],
-                        'id' => $size_arr[2] ?? ''
-                    ];
+                $size_arr = explode(':', $sz); // {color : size : quantity}
+
+                //colors
+                if (!in_array($size_arr[0], $colors)) {
+                    $colors[] = $size_arr[0];
                 }
+
+                // sizes
+                if (!in_array($size_arr[1], $sizes)) {
+                    $sizes[] = $size_arr[1];
+                }
+
+                $fields[] = [
+                    (object) [
+                        'name' => "Màu",
+                        'value' => $size_arr[0],
+                    ],
+                    (object) [
+                        'name' => "Size",
+                        'value' => $size_arr[1],
+                    ],
+                    'quantity' => $size_arr[2],
+                    'id' => $size_arr[3] ?? ''
+                ];
             }
         }
 
         // mapping size id
-        $parent_sizes = json_decode($data->size) ?? [];
+        $parent_sizes = json_decode($parent->size) ?? [];
         $parent_sizes_arr = [];
         foreach ($parent_sizes as $parent_size) {
             $p_sz = explode(':', $parent_size);
-            $parent_sizes_arr[$p_sz[0]] = $p_sz[2];
+            $parent_sizes_arr[$p_sz[0].':'.$p_sz[1]] = $p_sz[2];
         }
-        foreach ($sizes as $key => $size) {
-            if (key_exists($key, $parent_sizes_arr)) {
-                $sizes[$key]['id'] = $parent_sizes_arr[$key];
+
+        foreach ($fields as $key => $field) {
+            $field_key = $field[0]->value . ':' . $field[1]->value;
+            if (key_exists($field_key, $parent_sizes_arr)) {
+                $fields[$key]['id'] = $parent_sizes_arr[$field_key];
             }
         }
+        return [$sizes, $colors, $fields];
+    }
+
+    public function putCake($data, $newChild, $isNewOrder = false, $oldChildren = [])
+    {
+        //get size children
+        $children = $data->children()->get();
+        $getFields = $this->getFields($children, $data);
+        $sizes = $getFields[0];
+        $colors = $getFields[1];
+        $fields = $getFields[2];
+
+        // merge same value
+        $newFields = [];
+        foreach ($fields as $field) {
+            if ($field['id']) {
+                $found = false;
+                foreach ($newFields as $key => $new) {
+                    if ($field['id'] == $new['id']) {
+                        $newFields[$key]['quantity'] += $field['quantity'];
+                        $found = true;
+                    }
+                }
+                if (!$found) {
+                    $newFields[] = $field;
+                }
+            } else {
+                $newFields[] = $field;
+            }
+        }
+        $fields = $newFields;
 
         // $product_attributes, $fields
         $variations = [];
-        $size_pos = [];
-        foreach ($sizes as $size => $attribute) {
-            $size_pos[] = $size;
+        foreach ($fields as $field) {
+            $field_copy = $field;
+            unset($field_copy['quantity']);
+            unset($field_copy['id']);
             $variation = [
-                'fields' => [(object)[
-                    'name' => 'Size',
-                    'value' => $size,
-                ]],
+                'fields' => $field_copy,
                 'images' => $data->design ? [$data->design->getFirstMediaUrl('image')] : '',
                 'last_imported_price' => 0,
                 'retail_price' => 0,
                 'weight' => 0,
             ];
-            if ($attribute['id']) {
+            if ($field['id']) {
                 $variation = array_merge($variation, [
-                    'id' => $attribute['id']
+                    'id' => $field['id']
                 ]);
             }
             $variations[] = (object)$variation;
         }
         $product_attributes = [
             (object)[
+                'name' => 'Màu',
+                'values' => (array)$colors
+            ],
+            (object)[
                 'name' => 'Size',
-                'values' => (array)$size_pos
+                'values' => (array)$sizes
             ]
         ];
+
         //end $product_attributes, $fields
 
         $objectProduct = new \stdClass();
@@ -357,17 +408,128 @@ class ProductController
         if (@$response->success) {
             $size_mix_variations = [];
             $variations_pos = $response->data->variations;
-            $i = 0;
-            foreach ($sizes as $key => $size) {
-                $size_mix_variations[] = $key . ':' . $size['value'] . ':' . $variations_pos[$i]->id;
-                $i++;
+            foreach ($variations_pos as $key => $var) {
+                $fields[$key]['id'] = $var->id;
+                $size_mix_variations[] = $var->fields[0]->value . ':' . $var->fields[1]->value . ':' . $var->id;
             }
             $data->update([
                 'id_pos' => $response->data->id,
                 'size' => json_encode($size_mix_variations),
             ]);
+
+            if ($isNewOrder) {
+                $this->newPurchase($data, $fields, $newChild, $oldChildren);
+            } else {
+                //
+            }
         }
 
+    }
+
+    public function newPurchase($parent, $data, $newChild, $oldChildren)
+    {
+        $oldData = $this->getFields($oldChildren, $parent);
+        //compare fields
+        if (!empty($oldData)) {
+            foreach ($data as $key => $newField) {
+                $change = false;
+                foreach ($oldData[2] as $oldField) {
+                    if ($oldField[0]->value == $newField[0]->value && $oldField[1]->value == $newField[1]->value) {
+                        $change = $newField['quantity'] - $oldField['quantity'];
+                        break;
+                    }
+                }
+                if ($change <= 0) {
+                    unset($data[$key]);
+                }
+                if ($change > 0) {
+                    $data[$key]['quantity'] = $change;
+                }
+
+            }
+        }
+
+        $items = [];
+        foreach ($data as $key => $field)  {
+            $items[] = (object)[
+                "imported_price" => 0,
+                "index" => $key,
+                'quantity' => (int)$field['quantity'],
+                'variation_id' => $field['id']
+            ];
+        }
+        $payload = [
+            'status'=> -1,
+            "items" => $items,
+            "note"=> "",
+            "not_create_transaction" => false,
+            "auto_create_debts" => true,
+            "change_received_at" => true,
+            "warehouse_id" => '5b9371b6-54c8-4168-a653-d25ebb434d6b',
+            "images" => []
+        ];
+        $object = new \stdClass();
+        $object->purchase = (object)$payload;
+        $response = callApi(pos_post_purchase_url(), 'POST', json_encode($object));
+
+        if (@$response->success) {
+            $newChild->update([
+                'purchase_id' => $response->data->id,
+            ]);
+        }
+    }
+
+    public function updatePurchase($parent, $data, $newChild, $oldChildren)
+    {
+        $oldData = $this->getFields($oldChildren, $parent);
+        //compare fields
+        if (!empty($oldData)) {
+            foreach ($data as $key => $newField) {
+                $change = false;
+                foreach ($oldData[2] as $oldField) {
+                    if ($oldField[0]->value == $newField[0]->value && $oldField[1]->value == $newField[1]->value) {
+                        $change = $newField['quantity'] - $oldField['quantity'];
+                        break;
+                    }
+                }
+                if ($change <= 0) {
+                    unset($data[$key]);
+                }
+                if ($change > 0) {
+                    $data[$key]['quantity'] = $change;
+                }
+
+            }
+        }
+
+        $items = [];
+        foreach ($data as $key => $field)  {
+            $items[] = (object)[
+                "imported_price" => 0,
+                "index" => $key,
+                'quantity' => (int)$field['quantity'],
+                'variation_id' => $field['id']
+            ];
+        }
+        $payload = [
+            'status'=> -1,
+            "items" => $items,
+            "note"=> "",
+            "not_create_transaction" => false,
+            "auto_create_debts" => true,
+            "change_received_at" => true,
+            "warehouse_id" => '5b9371b6-54c8-4168-a653-d25ebb434d6b',
+            "images" => []
+        ];
+        $object = new \stdClass();
+        $object->purchase = (object)$payload;
+        $response = callApi(pos_post_purchase_url(), 'POST', json_encode($object));
+
+        if (@$response->success) {
+            $newChild->update([
+                'purchase_id' => $response->data->id,
+            ]);
+        }
     }
 
     public function changeStatus(Products $product, Request $request)

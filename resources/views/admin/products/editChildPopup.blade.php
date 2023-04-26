@@ -32,7 +32,7 @@
                                                             Số lượng:
                                                         </label>
                                                         <div class="col-lg-9">
-                                                            <input autocomplete="new-password" type="text"
+                                                            <input autocomplete="new-password" type="text" readonly
                                                                    name="quantity" id="quantity"
                                                                    class="form-control" placeholder="Số lượng"
                                                                    value="{{ $product->quantity }}">
@@ -45,7 +45,7 @@
                                                             Số lượng cắt:
                                                         </label>
                                                         <div class="col-lg-9">
-                                                            <input autocomplete="new-password" type="text"
+                                                            <input autocomplete="new-password" type="text" readonly
                                                                    name="cut" id="cut" class="form-control"
                                                                    placeholder="Số lượng cắt"
                                                                    value="{{ $product->cut }}">
@@ -82,33 +82,33 @@
                                                         <label class="col-lg-2 col-form-label text-lg-right"
                                                                for="cut">
                                                             <span class="text-danger">*</span>
-                                                            Size:
+                                                            Thuộc tính sản phẩm:
                                                         </label>
                                                         <div class="col-lg-9 ">
                                                             <div class="group-size-child">
                                                                 @foreach($product->size as $size)
                                                                     <div class="form-row form-size-child">
-                                                                        <div class="form-group col-md-6">
-                                                                            <input type="text" class="form-control"
+                                                                        <div class="form-group col-md-3">
+                                                                            <input type="text" class="form-control" readonly
+                                                                                   name="color_type[]"
+                                                                                   value="{{ @explode(':', $size)[0] }}"
+                                                                                   placeholder="Mã màu">
+                                                                        </div>
+                                                                        <div class="form-group col-md-3">
+                                                                            <input type="text" class="form-control" readonly
                                                                                    name="size_type[]"
-                                                                                   value="{{ explode(':', $size)[0] }}"
+                                                                                   value="{{ @explode(':', $size)[1] }}"
                                                                                    placeholder="Size S, M, L, Xl">
                                                                         </div>
                                                                         <div class="form-group col-md-3">
-                                                                            <input type="number" class="form-control"
+                                                                            <input type="number" class="form-control" readonly
                                                                                    name="size_quantity[]"
-                                                                                   value="{{ explode(':', $size)[1] }}"
+                                                                                   value="{{ @explode(':', $size)[2] }}"
                                                                                    placeholder="Số lượng">
                                                                         </div>
-                                                                        <button type="button"
-                                                                                style="height: 2.5em; width: 2.5em;padding: initial;"
-                                                                                class="btn btn-danger btn-remove-child">
-                                                                            xóa
-                                                                        </button>
                                                                     </div>
                                                                 @endforeach
                                                             </div>
-                                                            <a href="#" id="addSizeChild">Thêm loại size</a>
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
@@ -122,7 +122,7 @@
                                                                 @foreach($product->produce_id as $key => $produce_id)
                                                                     <div class="form-row form-produce-child">
                                                                         <div class="form-group col-md-6">
-                                                                            <select name="produce_id[]"
+                                                                            <select name="produce_id[]" disabled
                                                                                     class="form-control "
                                                                                     data-width="100%">
                                                                                 @foreach($produces as $produce)
@@ -135,20 +135,14 @@
                                                                             <div class="clearfix"></div>
                                                                         </div>
                                                                         <div class="form-group col-md-3">
-                                                                            <input type="number" class="form-control"
+                                                                            <input type="number" class="form-control" readonly
                                                                                    name="produce_quantity[]" value="{{ $product->produce_quantity[$key] }}"
                                                                                    placeholder="Số lượng">
 
                                                                         </div>
-                                                                        <button type="button"
-                                                                                style="height: 2.5em; width: 2.5em;padding: initial;"
-                                                                                class="btn btn-danger btn-remove-produce-child">
-                                                                            xóa
-                                                                        </button>
                                                                     </div>
                                                                 @endforeach
                                                             </div>
-                                                            <a href="#" id="addProduce-child">Thêm loại nguyên liệu</a>
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
@@ -157,7 +151,7 @@
                                                             <span class="text-danger">*</span> Xưởng
                                                         </label>
                                                         <div class="col-lg-9">
-                                                            <select name="brand_id" class="form-control "
+                                                            <select name="brand_id" class="form-control " disabled
                                                                     data-width="100%">
                                                                 @foreach($brands as $brand)
                                                                     <option value="{{ $brand->id }}" @if($brand->id == $product->brand_id) selected @endif>

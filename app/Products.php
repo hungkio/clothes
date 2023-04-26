@@ -8,7 +8,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Products extends Model implements HasMedia
 {
-    protected $fillable = ['name', 'id_pos', 'parent', 'quantity', 'cut', 'receive', 'not_receive', 'note', 'size', 'brand_id', 'design_id', 'produce_id', 'produce_quantity'];
+    protected $fillable = ['name', 'id_pos', 'parent', 'quantity', 'cut', 'receive', 'not_receive', 'note', 'size', 'brand_id', 'design_id', 'produce_id', 'produce_quantity', 'purchase_id'];
     use InteractsWithMedia;
     public $guarded = [];
 

@@ -72,12 +72,18 @@
                                                             <label class="col-lg-2 col-form-label text-lg-right"
                                                                    for="cut">
                                                                 <span class="text-danger">*</span>
-                                                                Size:
+                                                                Thuộc tính sản phẩm:
                                                             </label>
                                                             <div class="col-lg-9 ">
                                                                 <div class="group-size">
                                                                     <div class="form-row form-size">
-                                                                        <div class="form-group col-md-6">
+                                                                        <div class="form-group col-md-3">
+                                                                            <input type="text" class="form-control"
+                                                                                   name="color_type[]"
+                                                                                   value=""
+                                                                                   placeholder="Mã màu">
+                                                                        </div>
+                                                                        <div class="form-group col-md-3">
                                                                             <input type="text" class="form-control"
                                                                                    name="size_type[]"
                                                                                    placeholder="Size S, M, L, Xl">
@@ -207,7 +213,7 @@
                 colspan="1" style="width: 10%;" aria-label="Chưa nhận: activate to sort column ascending">Chưa nhận
             </th>
             <th title="Ghi chú" width="15%" class="sorting" tabindex="0" aria-controls="ProductDataTable" rowspan="1"
-                colspan="1" style="width: 15%;" aria-label="Ghi chú: activate to sort column ascending">Size
+                colspan="1" style="width: 15%;" aria-label="Ghi chú: activate to sort column ascending">Thuộc tính
             </th>
             <th title="Ghi chú" width="15%" class="sorting" tabindex="0" aria-controls="ProductDataTable" rowspan="1"
                 colspan="1" style="width: 15%;" aria-label="Ghi chú: activate to sort column ascending">Nguyên liệu
