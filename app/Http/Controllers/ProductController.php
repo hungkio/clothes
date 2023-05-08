@@ -12,6 +12,7 @@ use App\Products;
 use GuzzleHttp\Client;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ProductController
@@ -145,16 +146,17 @@ class ProductController
         $old_produce_id = $product->produce_id;
         $old_produce_quantity = $product->produce_quantity;
 
-        $produce_id = $request->produce_id;
+        $produce_id = json_decode($product->produce_id);
         $produce_quantity = $request->produce_quantity;
 
         //size
         $size_type = $request->size_type;
         $size_quantity = $request->size_quantity;
         $color_type = $request->color_type;
+        $size_quantity_received = $request->size_quantity_received;
         $size_map = [];
         foreach ($size_type as $key => $size) {
-            $size_map[] = $color_type[$key] . ":$size:" . $size_quantity[$key];
+            $size_map[] =  "$color_type[$key]:$size:$size_quantity[$key]:$size_quantity_received[$key]" ;
         }
 
         $data = [
@@ -164,13 +166,13 @@ class ProductController
             'produce_id' => json_encode($produce_id),
             'produce_quantity' => json_encode($produce_quantity),
             'brand_id' => $request->brand_id,
-            'note' => $request->note,
-            'receive' => $request->receive,
             'not_receive' => $request->not_receive,
         ];
 
+        $parent = $product->parent()->first();
+        $oldChildren = $parent->children()->get();
         $product->update($data);
-        $this->putCake($product->parent()->first(), $product);
+        $this->putCake($parent, $product, false, $oldChildren);
 
         $this->updateParentInfo($product->parent);
         $this->updateProduce(
@@ -305,6 +307,7 @@ class ProductController
                         'value' => $size_arr[1],
                     ],
                     'quantity' => $size_arr[2],
+                    'quantity_received' => @$size_arr[3],
                     'id' => $size_arr[3] ?? ''
                 ];
             }
@@ -362,6 +365,7 @@ class ProductController
             $field_copy = $field;
             unset($field_copy['quantity']);
             unset($field_copy['id']);
+            unset($field_copy['quantity_received']);
             $variation = [
                 'fields' => $field_copy,
                 'images' => $data->design ? [$data->design->getFirstMediaUrl('image')] : '',
@@ -420,7 +424,7 @@ class ProductController
             if ($isNewOrder) {
                 $this->newPurchase($data, $fields, $newChild, $oldChildren);
             } else {
-                //
+                $this->updatePurchase($data, $fields, $newChild, $oldChildren);
             }
         }
 
@@ -430,7 +434,7 @@ class ProductController
     {
         $oldData = $this->getFields($oldChildren, $parent);
         //compare fields
-        if (!empty($oldData)) {
+        if (!empty($oldData) && !empty($oldData[2])) {
             foreach ($data as $key => $newField) {
                 $change = false;
                 foreach ($oldData[2] as $oldField) {
@@ -488,48 +492,85 @@ class ProductController
                 $change = false;
                 foreach ($oldData[2] as $oldField) {
                     if ($oldField[0]->value == $newField[0]->value && $oldField[1]->value == $newField[1]->value) {
-                        $change = $newField['quantity'] - $oldField['quantity'];
+                        if (!$newField['quantity_received']) {
+                            $newField['quantity_received'] = 0;
+                        }
+                        if (!$oldField['quantity_received']) {
+                            $oldField['quantity_received'] = 0;
+                        }
+                        $change = ($newField['quantity_received'] ?? 0) - ($oldField['quantity_received'] ?? 0);
                         break;
                     }
                 }
                 if ($change <= 0) {
-                    unset($data[$key]);
+                    $data[$key]['quantity_changed'] = 0;
                 }
                 if ($change > 0) {
-                    $data[$key]['quantity'] = $change;
+                    $data[$key]['quantity_changed'] = $change;
                 }
 
             }
         }
 
-        $items = [];
+        $newPurchaseItems = [];
+        $oldPurchaseItems = [];
+        $noChange = true;
         foreach ($data as $key => $field)  {
-            $items[] = (object)[
+            if ($field['quantity_changed']) {
+                $noChange = false;
+            }
+            $newPurchaseItems[] = (object)[
                 "imported_price" => 0,
                 "index" => $key,
-                'quantity' => (int)$field['quantity'],
+                'quantity' => (int)$field['quantity_changed'],
+                'variation_id' => $field['id']
+            ];
+            $oldPurchaseItems[] = (object)[
+                "imported_price" => 0,
+                "index" => $key,
+                'quantity' => (int)$field['quantity'] - (int)$field['quantity_received'],
                 'variation_id' => $field['id']
             ];
         }
-        $payload = [
-            'status'=> -1,
-            "items" => $items,
-            "note"=> "",
+
+        if ($noChange) {
+            return;
+        }
+
+        $newPurchase = [
+            'discount'=> 0,
+            "items" => $newPurchaseItems,
+            "note"=> $newChild->note,
             "not_create_transaction" => false,
             "auto_create_debts" => true,
-            "change_received_at" => true,
             "warehouse_id" => '5b9371b6-54c8-4168-a653-d25ebb434d6b',
-            "images" => []
+            "images" => [],
+            'received_at' => time(),
+            'prepaid_debt' => 0,
+            'status' => 1,
+            "tags" => [1],
+            "transport_fee"=> 0,
         ];
-        $object = new \stdClass();
-        $object->purchase = (object)$payload;
-        $response = callApi(pos_post_purchase_url(), 'POST', json_encode($object));
+        $oldPurchase = [
+            "id"=> $newChild->purchase_id,
+            'discount'=> 0,
+            "items" => $oldPurchaseItems,
+            "note"=> $newChild->note,
+            "not_create_transaction" => false,
+            "auto_create_debts" => true,
+            "warehouse_id" => '5b9371b6-54c8-4168-a653-d25ebb434d6b',
+            "images" => [],
+            'received_at' => time(),
+            'prepaid_debt' => 0,
+            "tags" => [1],
+            "transport_fee"=> 0,
+        ];
 
-        if (@$response->success) {
-            $newChild->update([
-                'purchase_id' => $response->data->id,
-            ]);
-        }
+        $object = new \stdClass();
+        $object->newPurchase = (object)$newPurchase;
+        $object->oldPurchase = (object)$oldPurchase;
+
+        $response = callApi(pos_post_separate_url(), 'POST', json_encode($object));
     }
 
     public function changeStatus(Products $product, Request $request)

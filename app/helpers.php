@@ -150,6 +150,14 @@ if (!function_exists('pos_post_purchase_url')) {
     }
 }
 
+if (!function_exists('pos_post_separate_url')) {
+    function pos_post_separate_url()
+    {
+        $url = config('app.pos_uri') . config('app.pos_shop_id') . "/purchases/separate?api_key=" . config('app.pos_api_key');
+        return $url;
+    }
+}
+
 if (!function_exists('callApi')) {
     function callApi($url, $method, $params = [], $headers = [])
     {

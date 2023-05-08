@@ -45,37 +45,10 @@
                                                             Số lượng cắt:
                                                         </label>
                                                         <div class="col-lg-9">
-                                                            <input autocomplete="new-password" type="text" readonly
+                                                            <input autocomplete="new-password" type="text"
                                                                    name="cut" id="cut" class="form-control"
                                                                    placeholder="Số lượng cắt"
                                                                    value="{{ $product->cut }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-lg-2 col-form-label text-lg-right"
-                                                               for="receive">
-                                                            <span class="text-danger">*</span>
-                                                            Số lượng đã nhận:
-                                                        </label>
-                                                        <div class="col-lg-9">
-                                                            <input autocomplete="new-password" type="text"
-                                                                   name="receive" id="receive" class="form-control"
-                                                                   placeholder="Số lượng đã nhận"
-                                                                   value="{{ $product->receive }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-lg-2 col-form-label text-lg-right"
-                                                               for="not_receive">
-                                                            <span class="text-danger">*</span>
-                                                            Số lượng chưa nhận:
-                                                        </label>
-                                                        <div class="col-lg-9">
-                                                            <input autocomplete="new-password" type="text"
-                                                                   name="not_receive" id="not_receive"
-                                                                   class="form-control"
-                                                                   placeholder="Số lượng chưa nhận"
-                                                                   value="{{ $product->not_receive }}">
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
@@ -105,6 +78,12 @@
                                                                                    name="size_quantity[]"
                                                                                    value="{{ @explode(':', $size)[2] }}"
                                                                                    placeholder="Số lượng">
+                                                                        </div>
+                                                                        <div class="form-group col-md-3">
+                                                                            <input type="number" class="form-control"
+                                                                                   name="size_quantity_received[]"
+                                                                                   value="{{ @explode(':', $size)[3] }}"
+                                                                                   placeholder="Số lượng đã nhận">
                                                                         </div>
                                                                     </div>
                                                                 @endforeach
