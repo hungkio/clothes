@@ -66,6 +66,15 @@ class ProductController
             }
             $child->produce_id = $produce;
             $child->size = json_decode($child->size);
+            $total_item = 0;
+            $total_received = 0;
+            foreach ($child->size as $size) {
+                $size_exploded = explode(':', $size);
+                $total_item += $size_exploded[2];
+                $total_received += $size_exploded[3];
+            }
+            $child->receive = $total_received;
+            $child->not_receive = $total_item - $total_received;
         }
         $brands = Brands::all();
         $produces = Produces::all();
@@ -208,6 +217,16 @@ class ProductController
         $total_receive = 0;
         $total_not_receive = 0;
         foreach ($children as $child) {
+            $total_item = 0;
+            $total_received = 0;
+            foreach (json_decode($child->size) as $size) {
+                $size_exploded = explode(':', $size);
+                $total_item += $size_exploded[2];
+                $total_received += $size_exploded[3];
+            }
+            $child->receive = $total_received;
+            $child->not_receive = $total_item - $total_received;
+
             $total_quantity += $child->quantity;
             $total_cut += $child->cut;
             $total_receive += $child->receive;
