@@ -79,6 +79,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('produces/{produce}/edit', [ProduceController::class, 'edit'])->name('produces.edit');
             Route::delete('produces/{produce}', [ProduceController::class, 'destroy'])->name('produces.destroy');
             Route::put('produces/{produce}', [ProduceController::class, 'update'])->name('produces.update');
+            Route::post('produces/{produce}/increase', [ProduceController::class, 'increase'])->name('produces.increase');
 
             //Upload Tinymce
             Route::post('uploads-tinymce', UploadTinymceController::class)->name('public.upload-tinymce');

@@ -21,6 +21,7 @@ class ProductDataTable extends BaseDatable
         return datatables()
             ->eloquent($query)
             ->addIndexColumn()
+            ->editColumn('code', fn (Products $product) => $product->code)
             ->addColumn('name', fn (Products $product) => view('admin.products._tableTitle', compact('product')))
             ->editColumn('quantity', fn (Products $product) => $product->quantity)
             ->editColumn('cut', fn (Products $product) => $product->cut)
@@ -52,6 +53,7 @@ class ProductDataTable extends BaseDatable
         return [
             Column::checkbox(''),
             Column::make('id')->title(__('STT'))->data('DT_RowIndex')->searchable(false),
+            Column::make('code')->title(__('Mã SP'))->width('18%'),
             Column::make('name')->title(__('Tên'))->width('18%'),
             Column::make('quantity')->title(__('Số lượng'))->width('10%'),
             Column::make('cut')->title(__('Số lượng cắt'))->width('10%'),

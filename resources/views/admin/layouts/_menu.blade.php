@@ -85,7 +85,7 @@
                            class="nav-link {{ request()->routeIs('admin.produces*') ? 'active' : null }}">
                             <i class="fal fa-conveyor-belt"></i>
                             <span>
-                            {{ __("Sản xuất") }}
+                            {{ __("Nguyên liệu") }}
                         </span>
                         </a>
                     </li>

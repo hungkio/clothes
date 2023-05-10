@@ -40,11 +40,36 @@
                                 </div>
 
                                 <x-text-field
+                                    name="code"
+                                    :placeholder="__('Mã sản phẩm')"
+                                    :label="__('Mã sản phẩm')"
+                                    :value="$design->code"
+                                    required
+                                >
+                                </x-text-field>
+
+                                <x-text-field
                                     name="name"
                                     :placeholder="__('Tên thiết kế')"
                                     :label="__('Tên thiết kế')"
                                     :value="$design->name"
                                     required
+                                >
+                                </x-text-field>
+
+                                <x-text-field
+                                    name="form"
+                                    :placeholder="__('Kiểu dáng')"
+                                    :label="__('Kiểu dáng')"
+                                    :value="$design->form"
+                                >
+                                </x-text-field>
+
+                                <x-text-field
+                                    name="material"
+                                    :placeholder="__('Chất liệu')"
+                                    :label="__('Chất liệu')"
+                                    :value="$design->material"
                                 >
                                 </x-text-field>
 

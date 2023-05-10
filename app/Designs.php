@@ -11,7 +11,7 @@ class Designs extends Model implements HasMedia
 {
     use InteractsWithMedia;
 
-    protected $fillable = ['name', 'progress', 'duration', 'status', 'staff_id'];
+    protected $fillable = ['name', 'progress', 'duration', 'status', 'staff_id', 'code', 'form', 'material'];
     public $guarded = [];
     const PROGRESS = [
         1 => 'Thiết kế',

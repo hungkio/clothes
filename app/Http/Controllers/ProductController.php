@@ -129,6 +129,7 @@ class ProductController
 
         $data = [
             'name' => $product->name,
+            'code' => $product->code,
             'parent' => $product->id,
             'quantity' => $request->quantity,
             'cut' => $request->cut,
@@ -222,7 +223,7 @@ class ProductController
             foreach (json_decode($child->size) as $size) {
                 $size_exploded = explode(':', $size);
                 $total_item += $size_exploded[2];
-                $total_received += $size_exploded[3];
+                $total_received += @$size_exploded[3];
             }
             $child->receive = $total_received;
             $child->not_receive = $total_item - $total_received;
@@ -414,6 +415,7 @@ class ProductController
 
         $objectProduct = new \stdClass();
         $objectProduct->name = $data->name;
+        $objectProduct->custom_id = $data->code;
         $objectProduct->note_product = $data->note;
         $objectProduct->product_attributes = $product_attributes;
         $objectProduct->variations = $variations;

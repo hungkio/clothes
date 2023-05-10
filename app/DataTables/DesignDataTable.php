@@ -21,6 +21,7 @@ class DesignDataTable extends BaseDatable
         return datatables()
             ->eloquent($query)
             ->addIndexColumn()
+            ->editColumn('code',fn (Designs $design) => $design->code)
             ->addColumn('name', fn (Designs $design) => view('admin.designs._tableTitle', compact('design')))
             ->editColumn('staff_id', fn (Designs $design) => (($design->user->first_name ?? '') . ' ' . ($design->user->last_name ?? '')))
             ->editColumn('progress',fn (Designs $design) => Designs::PROGRESS[$design->progress])
@@ -52,6 +53,7 @@ class DesignDataTable extends BaseDatable
         return [
             Column::checkbox(''),
             Column::make('id')->title(__('STT'))->data('DT_RowIndex')->searchable(false),
+            Column::make('code')->title(__('Mã SP'))->width('18%'),
             Column::make('name')->title(__('Tên'))->width('18%'),
             Column::make('staff_id')->title(__('Nhân viên'))->width('18%'),
             Column::make('progress')->title(__('Tiến trình'))->width('10%'),

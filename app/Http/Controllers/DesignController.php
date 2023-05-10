@@ -62,6 +62,7 @@ class DesignController
         $design->update($request->all());
         Products::create([
             'name' => $design->name,
+            'code' => $design->code,
             'design_id' => $design->id,
         ]);
         return response()->json([

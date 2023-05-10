@@ -24,4 +24,9 @@ class Produces extends Model  implements HasMedia
             ->singleFile()
             ->useFallbackUrl('/backend/global_assets/images/placeholders/placeholder.jpg');
     }
+
+    public function logs()
+    {
+        return $this->hasMany(ProduceLog::class, 'produce_id');
+    }
 }

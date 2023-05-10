@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Admin\ProduceRequest;
+use App\ProduceLog;
 use App\Produces;
 use App\DataTables\ProduceDataTable;
 use App\Http\Requests\Admin\PostBulkDeleteRequest;
@@ -87,6 +88,22 @@ class ProduceController
                     'count' => $count_deleted,
                 ]),
         ]);
+    }
+
+    public function increase(Produces $produce, Request $request)
+    {
+        if ($request->increase) {
+            $produce->update([
+                'quantity' => $produce->quantity + $request->increase
+            ]);
+            ProduceLog::create([
+                'produce_id' => $produce->id,
+                'increase' => $request->increase,
+            ]);
+            flash()->success(__('Nguyên liệu ":model" đã được nhập thêm!', ['model' => $produce->name]));
+        }
+        return back();
+
     }
 
     public function changeStatus(Post $produce, Request $request)
