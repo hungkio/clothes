@@ -71,7 +71,7 @@ class ProductController
             foreach ($child->size as $size) {
                 $size_exploded = explode(':', $size);
                 $total_item += $size_exploded[2];
-                $total_received += $size_exploded[3];
+                $total_received += @$size_exploded[3];
             }
             $child->receive = $total_received;
             $child->not_receive = $total_item - $total_received;
