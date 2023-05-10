@@ -798,3 +798,9 @@ a.text-primary:focus, a.text-primary:hover{
         text-align: center;
     }
 }
+@media (min-width: 992px) {
+    .modal-lg, .modal-xl {
+        max-width: 1200px!important;
+    }
+}
+

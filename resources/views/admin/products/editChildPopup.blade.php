@@ -27,59 +27,56 @@
                                                 <div class="collapse show" id="general">
                                                     <div class="form-group row">
                                                         <label class="col-lg-2 col-form-label text-lg-right"
-                                                               for="quantity">
-                                                            <span class="text-danger">*</span>
-                                                            Số lượng:
-                                                        </label>
-                                                        <div class="col-lg-9">
-                                                            <input autocomplete="new-password" type="text" readonly
-                                                                   name="quantity" id="quantity"
-                                                                   class="form-control" placeholder="Số lượng"
-                                                                   value="{{ $product->quantity }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-lg-2 col-form-label text-lg-right"
-                                                               for="cut">
-                                                            <span class="text-danger">*</span>
-                                                            Số lượng cắt:
-                                                        </label>
-                                                        <div class="col-lg-9">
-                                                            <input autocomplete="new-password" type="text"
-                                                                   name="cut" id="cut" class="form-control"
-                                                                   placeholder="Số lượng cắt"
-                                                                   value="{{ $product->cut }}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-lg-2 col-form-label text-lg-right"
                                                                for="cut">
                                                             <span class="text-danger">*</span>
                                                             Thuộc tính sản phẩm:
                                                         </label>
                                                         <div class="col-lg-9 ">
                                                             <div class="group-size-child">
-                                                                @foreach($product->size as $size)
+                                                                <div class="form-row form-size-child">
+                                                                    <div class="form-group col">
+                                                                        Mã màu
+                                                                    </div>
+                                                                    <div class="form-group col">
+                                                                        Size
+                                                                    </div>
+                                                                    <div class="form-group col">
+                                                                        Số lượng order
+                                                                    </div>
+                                                                    <div class="form-group col">
+                                                                        Số lượng cắt
+                                                                    </div>
+                                                                    <div class="form-group col">
+                                                                        Số lượng đã nhận
+                                                                    </div>
+                                                                </div>
+                                                                @foreach($product->size as $key => $size)
                                                                     <div class="form-row form-size-child">
-                                                                        <div class="form-group col-md-3">
+                                                                        <div class="form-group col">
                                                                             <input type="text" class="form-control" readonly
                                                                                    name="color_type[]"
                                                                                    value="{{ @explode(':', $size)[0] }}"
                                                                                    placeholder="Mã màu">
                                                                         </div>
-                                                                        <div class="form-group col-md-3">
+                                                                        <div class="form-group col">
                                                                             <input type="text" class="form-control" readonly
                                                                                    name="size_type[]"
                                                                                    value="{{ @explode(':', $size)[1] }}"
                                                                                    placeholder="Size S, M, L, Xl">
                                                                         </div>
-                                                                        <div class="form-group col-md-3">
+                                                                        <div class="form-group col">
                                                                             <input type="number" class="form-control" readonly
                                                                                    name="size_quantity[]"
                                                                                    value="{{ @explode(':', $size)[2] }}"
                                                                                    placeholder="Số lượng">
                                                                         </div>
-                                                                        <div class="form-group col-md-3">
+                                                                        <div class="form-group col">
+                                                                            <input type="number" class="form-control"
+                                                                                   name="cut[]"
+                                                                                   value="{{ @json_decode($product->size)[$key] }}"
+                                                                                   placeholder="Số lượng cắt">
+                                                                        </div>
+                                                                        <div class="form-group col">
                                                                             <input type="number" class="form-control"
                                                                                    name="size_quantity_received[]"
                                                                                    value="{{ @explode(':', $size)[3] }}"
