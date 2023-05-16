@@ -44,32 +44,6 @@
                                                     <div class="collapse show" id="general">
                                                         <div class="form-group row">
                                                             <label class="col-lg-2 col-form-label text-lg-right"
-                                                                   for="quantity">
-                                                                <span class="text-danger">*</span>
-                                                                Số lượng:
-                                                            </label>
-                                                            <div class="col-lg-9">
-                                                                <input autocomplete="new-password" type="text"
-                                                                       name="quantity" id="quantity"
-                                                                       class="form-control" placeholder="Số lượng"
-                                                                       value="">
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <label class="col-lg-2 col-form-label text-lg-right"
-                                                                   for="cut">
-                                                                <span class="text-danger">*</span>
-                                                                Số lượng cắt:
-                                                            </label>
-                                                            <div class="col-lg-9">
-                                                                <input autocomplete="new-password" type="text"
-                                                                       name="cut" id="cut" class="form-control"
-                                                                       placeholder="Số lượng cắt" value="">
-                                                            </div>
-
-                                                        </div>
-                                                        <div class="form-group row">
-                                                            <label class="col-lg-2 col-form-label text-lg-right"
                                                                    for="cut">
                                                                 <span class="text-danger">*</span>
                                                                 Thuộc tính sản phẩm:
@@ -198,9 +172,6 @@
             <th title="STT" class="sorting" tabindex="0" aria-controls="ProductDataTable" rowspan="1" colspan="1"
                 aria-label="STT: activate to sort column ascending">Lượt order
             </th>
-            <th title="Số lượng" width="10%" class="sorting" tabindex="0" aria-controls="ProductDataTable" rowspan="1"
-                colspan="1" style="width: 10%;" aria-label="Số lượng: activate to sort column ascending">Số lượng
-            </th>
             <th title="Số lượng cắt" width="10%" class="sorting" tabindex="0" aria-controls="ProductDataTable"
                 rowspan="1" colspan="1" style="width: 10%;"
                 aria-label="Số lượng cắt: activate to sort column ascending">Số lượng cắt
@@ -236,7 +207,6 @@
         @foreach($children as $key => $child)
             <tr role="row" class="odd">
                 <td>{{ $key+1 }}</td>
-                <td>{{ $child->quantity }}</td>
                 <td>{{ $child->cut }}</td>
                 <td>{{ $child->receive }}</td>
                 <td>{{ $child->not_receive }}</td>

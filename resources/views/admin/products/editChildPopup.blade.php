@@ -73,7 +73,7 @@
                                                                         <div class="form-group col">
                                                                             <input type="number" class="form-control"
                                                                                    name="cut[]"
-                                                                                   value="{{ @json_decode($product->size)[$key] }}"
+                                                                                   value="{{ $product->cut ? json_decode($product->cut)[$key] : null }}"
                                                                                    placeholder="Số lượng cắt">
                                                                         </div>
                                                                         <div class="form-group col">

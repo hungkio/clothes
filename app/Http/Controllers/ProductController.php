@@ -42,6 +42,7 @@ class ProductController
         $design = Designs::findOrFail($request->design_id);
         $data = $request->all();
         $data['name'] = $design->name;
+        $data['code'] = $design->code;
         $product = Products::create($data);
 
         $design->update([
@@ -71,7 +72,7 @@ class ProductController
             foreach ($child->size as $size) {
                 $size_exploded = explode(':', $size);
                 $total_item += $size_exploded[2];
-                $total_received += @$size_exploded[3];
+                $total_received += (@$size_exploded[3] == "" ? 0 : @$size_exploded[3]);
             }
             $child->receive = $total_received;
             $child->not_receive = $total_item - $total_received;
@@ -164,9 +165,15 @@ class ProductController
         $size_quantity = $request->size_quantity;
         $color_type = $request->color_type;
         $size_quantity_received = $request->size_quantity_received;
+        $cut = $request->cut;
+
         $size_map = [];
         foreach ($size_type as $key => $size) {
-            $size_map[] =  "$color_type[$key]:$size:$size_quantity[$key]:$size_quantity_received[$key]" ;
+            $quantity = $size_quantity[$key];
+            if ($cut[$key] !== null) {
+                $quantity = $cut[$key];
+            }
+            $size_map[] =  "$color_type[$key]:$size:$quantity:$size_quantity_received[$key]" ;
         }
 
         $data = [
@@ -183,8 +190,8 @@ class ProductController
         $oldChildren = $parent->children()->get();
         $product->update($data);
         $this->putCake($parent, $product, false, $oldChildren);
-
         $this->updateParentInfo($product->parent);
+
         $this->updateProduce(
             $old_produce_id ? json_decode($old_produce_id) : [],
             $old_produce_quantity ? json_decode($old_produce_quantity) : [],
@@ -223,13 +230,13 @@ class ProductController
             foreach (json_decode($child->size) as $size) {
                 $size_exploded = explode(':', $size);
                 $total_item += $size_exploded[2];
-                $total_received += @$size_exploded[3];
+                $total_received += (@$size_exploded[3] == "" ? 0 : @$size_exploded[3]);
             }
             $child->receive = $total_received;
             $child->not_receive = $total_item - $total_received;
 
             $total_quantity += $child->quantity;
-            $total_cut += $child->cut;
+            $total_cut += $child->cut ? array_sum(json_decode($child->cut)) : 0;
             $total_receive += $child->receive;
             $total_not_receive += $child->not_receive;
         }
@@ -367,6 +374,7 @@ class ProductController
                 foreach ($newFields as $key => $new) {
                     if ($field['id'] == $new['id']) {
                         $newFields[$key]['quantity'] += $field['quantity'];
+                        $newFields[$key]['quantity_received'] += $field['quantity_received'] == "" ? 0 : $field['quantity_received'];
                         $found = true;
                     }
                 }
@@ -453,29 +461,25 @@ class ProductController
 
     public function newPurchase($parent, $data, $newChild, $oldChildren)
     {
-        $oldData = $this->getFields($oldChildren, $parent);
-        //compare fields
-        if (!empty($oldData) && !empty($oldData[2])) {
-            foreach ($data as $key => $newField) {
-                $change = false;
-                foreach ($oldData[2] as $oldField) {
-                    if ($oldField[0]->value == $newField[0]->value && $oldField[1]->value == $newField[1]->value) {
-                        $change = $newField['quantity'] - $oldField['quantity'];
-                        break;
-                    }
-                }
-                if ($change <= 0) {
-                    unset($data[$key]);
-                }
-                if ($change > 0) {
-                    $data[$key]['quantity'] = $change;
-                }
+        $parentSizes = json_decode($parent->size);
+        $childSizes = json_decode($newChild->size);
 
+        $mapSize = [];
+        foreach ($parentSizes as $parentSize) {
+            $parentSizeArr = explode(":", $parentSize);
+            foreach ($childSizes as $key => $childSize) {
+                $childSizeArr = explode(":", $childSize);
+                if ($parentSizeArr[0] == $childSizeArr[0] && $parentSizeArr[1] == $childSizeArr[1]) {
+                    $mapSize[] = [
+                        'quantity' => $childSizeArr[2],
+                        'id' => $parentSizeArr[2]
+                    ];
+                }
             }
         }
 
         $items = [];
-        foreach ($data as $key => $field)  {
+        foreach ($mapSize as $key => $field)  {
             $items[] = (object)[
                 "imported_price" => 0,
                 "index" => $key,
@@ -490,7 +494,7 @@ class ProductController
             "not_create_transaction" => false,
             "auto_create_debts" => true,
             "change_received_at" => true,
-            "warehouse_id" => '5b9371b6-54c8-4168-a653-d25ebb434d6b',
+            "warehouse_id" => config('app.pos_warehouse'),
             "images" => []
         ];
         $object = new \stdClass();
@@ -506,52 +510,109 @@ class ProductController
 
     public function updatePurchase($parent, $data, $newChild, $oldChildren)
     {
-        $oldData = $this->getFields($oldChildren, $parent);
-        //compare fields
-        if (!empty($oldData)) {
-            foreach ($data as $key => $newField) {
-                $change = false;
-                foreach ($oldData[2] as $oldField) {
-                    if ($oldField[0]->value == $newField[0]->value && $oldField[1]->value == $newField[1]->value) {
-                        if (!$newField['quantity_received']) {
-                            $newField['quantity_received'] = 0;
-                        }
-                        if (!$oldField['quantity_received']) {
-                            $oldField['quantity_received'] = 0;
-                        }
-                        $change = ($newField['quantity_received'] ?? 0) - ($oldField['quantity_received'] ?? 0);
-                        break;
-                    }
-                }
-                if ($change <= 0) {
-                    $data[$key]['quantity_changed'] = 0;
-                }
-                if ($change > 0) {
-                    $data[$key]['quantity_changed'] = $change;
-                }
+        //update purchase
+        $parentSizes = json_decode($parent->size);
+        $childSizes = json_decode($newChild->size);
+        $oldChild = $oldChildren->where('id', $newChild->id)->first();
+        $oldChildSizes = json_decode($oldChild->size);
 
+        $mapSize = [];
+        foreach ($parentSizes as $parentSize) {
+            $parentSizeArr = explode(":", $parentSize);
+            foreach ($childSizes as $key => $childSize) {
+                $childSizeArr = explode(":", $childSize);
+                $oldChildSizeArr = explode(":", $oldChildSizes[$key]);
+                if ($parentSizeArr[0] == $childSizeArr[0] && $parentSizeArr[1] == $childSizeArr[1]) {
+                    $size = [
+                        'quantity' => $childSizeArr[2],
+                        'id' => $parentSizeArr[2]
+                    ];
+
+                    $oldReceived = ($oldChildSizeArr[3] ?? "") == "" ? 0 : $oldChildSizeArr[3];
+                    $newReceived = ($childSizeArr[3] ?? "") == "" ? 0 : $childSizeArr[3];
+                    $diff = $newReceived - $oldReceived;
+                    if ($diff > 0) {
+                        $size['quantity_changed'] = $diff;
+                        $size['quantity_received'] = $childSizeArr[3];
+                    }
+                    $mapSize[] = $size;
+                }
             }
         }
+
+        $items = [];
+        foreach ($mapSize as $key => $field)  {
+            $items[] = (object)[
+                "imported_price" => 0,
+                "index" => $key,
+                'quantity' => (int)$field['quantity'],
+                'variation_id' => $field['id']
+            ];
+        }
+
+        $payload = [
+            'id' => $newChild->purchase_id,
+            'status'=> -1,
+            "items" => $items,
+            "note"=> "",
+            "not_create_transaction" => false,
+            "auto_create_debts" => true,
+            "change_received_at" => true,
+            "warehouse_id" => config('app.pos_warehouse'),
+            "images" => []
+        ];
+        $object = new \stdClass();
+        $object->purchase = (object)$payload;
+        $response = callApi(pos_put_purchase_url($newChild->purchase_id), 'PUT', json_encode($object));
+
+        // separate purchase
+//        $oldData = $this->getFields($oldChildren, $parent);
+//        //compare fields
+//        if (!empty($oldData)) {
+//            foreach ($data as $key => $newField) {
+//                $change = false;
+//                foreach ($oldData[2] as $oldField) {
+//                    if ($oldField[0]->value == $newField[0]->value && $oldField[1]->value == $newField[1]->value) {
+//                        if (!$newField['quantity_received']) {
+//                            $newField['quantity_received'] = 0;
+//                        }
+//                        if (!$oldField['quantity_received']) {
+//                            $oldField['quantity_received'] = 0;
+//                        }
+//                        $change = ($newField['quantity_received'] ?? 0) - ($oldField['quantity_received'] ?? 0);
+//                        break;
+//                    }
+//                }
+//                if ($change <= 0) {
+//                    $data[$key]['quantity_changed'] = 0;
+//                }
+//                if ($change > 0) {
+//                    $data[$key]['quantity_changed'] = $change;
+//                }
+//
+//            }
+//        }
 
         $newPurchaseItems = [];
         $oldPurchaseItems = [];
         $noChange = true;
-        foreach ($data as $key => $field)  {
-            if ($field['quantity_changed']) {
+        foreach ($mapSize as $key => $field)  {
+            if (@$field['quantity_changed']) {
                 $noChange = false;
+                $newPurchaseItems[] = (object)[
+                    "imported_price" => 0,
+                    "index" => $key,
+                    'quantity' => (int)$field['quantity_changed'],
+                    'variation_id' => $field['id']
+                ];
+                $oldPurchaseItems[] = (object)[
+                    "imported_price" => 0,
+                    "index" => $key,
+                    'quantity' => (int)$field['quantity'] - (int)$field['quantity_received'],
+                    'variation_id' => $field['id']
+                ];
             }
-            $newPurchaseItems[] = (object)[
-                "imported_price" => 0,
-                "index" => $key,
-                'quantity' => (int)$field['quantity_changed'],
-                'variation_id' => $field['id']
-            ];
-            $oldPurchaseItems[] = (object)[
-                "imported_price" => 0,
-                "index" => $key,
-                'quantity' => (int)$field['quantity'] - (int)$field['quantity_received'],
-                'variation_id' => $field['id']
-            ];
+
         }
 
         if ($noChange) {
@@ -564,7 +625,7 @@ class ProductController
             "note"=> $newChild->note,
             "not_create_transaction" => false,
             "auto_create_debts" => true,
-            "warehouse_id" => '5b9371b6-54c8-4168-a653-d25ebb434d6b',
+            "warehouse_id" => config('app.pos_warehouse'),
             "images" => [],
             'received_at' => time(),
             'prepaid_debt' => 0,
@@ -579,7 +640,7 @@ class ProductController
             "note"=> $newChild->note,
             "not_create_transaction" => false,
             "auto_create_debts" => true,
-            "warehouse_id" => '5b9371b6-54c8-4168-a653-d25ebb434d6b',
+            "warehouse_id" => config('app.pos_warehouse'),
             "images" => [],
             'received_at' => time(),
             'prepaid_debt' => 0,

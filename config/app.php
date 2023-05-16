@@ -58,6 +58,7 @@ return [
     'pos_shop_id' => env('POS_SHOP_ID', 5416380),
     'pos_api_key' => env('POS_API_KEY', '8c3633e06dec4ade8575a3c4cc0dbb9a'),
     'pos_uri' => env('POS_URI', 'https://pos.pages.fm/api/v1/shops/'),
+    'pos_warehouse' => env('POS_WAREHOUSE', '5b9371b6-54c8-4168-a653-d25ebb434d6b'),
 
     /*
     |--------------------------------------------------------------------------
